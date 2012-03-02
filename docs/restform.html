@@ -1,0 +1,227 @@
+<html>
+<body>
+<hr>
+<h1> NEW USER </h1>
+<body>
+<form method='POST' action='http://192.168.1.88:8087/users'>
+<input type='hidden' name='format' value='xml'/>
+<div> Email : <input type='text' name='email'> </input> </div>
+<div> Password : <input type='text' name='password'> </input> </div>
+<div> Name : <input type='text' name='name'> </input> </div>
+<div> Address : <input type='text' name='address' > </input> </div>
+<div> imei : <input type='text' name='imei' > </input> </div>
+<div> phoneNumber : <input type='text' name='phoneNumber' > </input> </div>
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+<hr>
+<h1> LOGIN  </h1>
+<body>
+<form method='GET' action='http://192.168.1.88:8087/users'>
+<!--<form method='GET' action='http://127.0.0.1:8080/rest'>-->
+<input type='hidden' name='format' value='xml'/>
+<div> Email : <input type='text' name='email'> </input> </div>
+<div> Password : <input type='text' name='password'> </input> </div>
+<div> phoneNumber : <input type='text' name='phoneNumber'> </input> </div>
+<div> IMEI : <input type='text' name='imei' > </input> </div>
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+<hr>
+<h1> GET GROUPs   </h1>
+<body>
+<form method='GET' action='http://ec2-184-73-161-12.compute-1.amazonaws.com/groups/'>
+<input type='hidden' name='format' value='xml'/>
+<div> PhoneID : <input type='text' name='phoneid'> </input> </div>
+<div> Token : <input type='text' name='token' > </input> </div>
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+<hr>
+<h1> UPDATE PHONE </h1>
+<body>
+<form method='POST' action='http://127.0.0.1:8080/phones' enctype="multipart/form-data">
+<input type='hidden' name='_method' value='PUT'/>
+<input type='hidden' name='format' value='xml'/>
+<div> ID : <input type='text' name='id'> </input> </div>
+<div> Token : <input type='text' name='token' > </input> </div>
+<div> email : <input type='text' name='email'> </input> </div>
+<div> password : <input type='text' name='password'> </input> </div>
+<div> username : <input type='text' name='username'> </input> </div>
+<div> address : <input type='text' name='address'> </input> </div>
+<div> phonename : <input type='text' name='phonename'> </input> </div>
+<div> number : <input type='text' name='number'> </input> </div>
+<div> imei : <input type='text' name='imei'> </input> </div>
+<div> phonetype : <input type='text' name='phonetype'> </input> </div>
+<div> latitude : <input type='text' name='latitude'> </input> </div>
+<div> longtitude : <input type='text' name='longtitude'> </input> </div>
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+<hr>
+<h1> EDIT PHONE </h1>
+<body>
+<form method='POST' action='http://127.0.0.1:8081/phones/1' enctype="multipart/form-data">
+<input type='hidden' name='_method' value='PUT'/>
+<input type='hidden' name='format' value='xml'/>
+<div> UserName : <input type='text' name='username'> </input> </div>
+<div> Phone Name : <input type='text' name='phonename'> </input> </div>
+<div> Token : <input type='text' name='token' > </input> </div>
+
+<div> File to upload: <input type="file" name='abc' /></div>
+
+<div> <input type='submit' name='submit'> </div>
+</form>
+<!--
+
+<hr>
+<h1> NEW GROUP </h1>
+<body>
+<form method='POST' action='http://127.0.0.1:8081/groups'>
+<input type='hidden' name='format' value='xml'/>
+<div> Name : <input type='text' name='name'> </input> </div>
+<div> Phone ID : <input type='text' name='phoneid'> </input> </div>
+<div> Token : <input type='text' name='token'> </input> </div>
+
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+<hr>
+<h1> EDIT GROUP </h1>
+<body>
+<form method='POST' action='http://127.0.0.1:8081/groups/3' enctype="multipart/form-data">
+<input type='hidden' name='_method' value='PUT'/>
+<input type='hidden' name='format' value='xml'/>
+<div> Name : <input type='text' name='name'> </input> </div>
+<div> Token : <input type='text' name='token' > </input> </div>
+
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+
+<hr>
+<h1> DELETE GROUP </h1>
+<body>
+<form method='POST' action='http://127.0.0.1:8081/groups/12' enctype="multipart/form-data">
+<input type='hidden' name='_method' value='DELETE'/>
+<input type='hidden' name='format' value='xml'/>
+<div> Token : <input type='text' name='token' > </input> </div>
+
+<div> <input type='submit' name='submit'> </div>
+</form>
+-->
+
+<hr>
+<h1> NEW CONTACT </h1>
+<body>
+<form method='POST' action='http://ec2-184-73-161-12.compute-1.amazonaws.com/contacts'>
+<input type='hidden' name='format' value='xml'/>
+<div> Group ID : <input type='text' name='groupid'> </input> </div>
+<div> Token : <input type='text' name='token'> </input> </div>
+<div> Name : <input type='text' name='name'> </input> </div>
+<div> Email : <input type='text' name='email'> </input> </div>
+<div> Voice phone : <input type='text' name='voicephone'> </input> </div>
+<div> Text phone : <input type='text' name='textphone'> </input> </div>
+
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+<h1> GET LIST CONTACT </h1>
+<body>
+<form method='GET' action='http://ec2-184-73-161-12.compute-1.amazonaws.com/contacts'>
+<input type='hidden' name='format' value='xml'/>
+<div> Group ID : <input type='text' name='groupid'> </input> </div>
+<div> Token : <input type='text' name='token'> </input> </div>
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+<hr>
+<h1> EDIT CONTACT </h1>
+<body>
+<form method='POST' action='http://127.0.0.1:8081/contacts/5' enctype="multipart/form-data">
+<input type='hidden' name='_method' value='PUT'/>
+<input type='hidden' name='format' value='xml'/>
+<div> Token : <input type='text' name='token' > </input> </div>
+<div> Name : <input type='text' name='name'> </input> </div>
+<div> Email : <input type='text' name='email'> </input> </div>
+<div> Voice phone : <input type='text' name='voicephone'> </input> </div>
+<div> Text phone : <input type='text' name='textphone'> </input> </div>
+
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+
+
+<hr>
+<h1> DELETE CONTACT </h1>
+<body>
+<form method='POST' action='http://127.0.0.1:8081/contacts/5' enctype="multipart/form-data">
+<input type='hidden' name='_method' value='DELETE'/>
+<input type='hidden' name='format' value='xml'/>
+<div> Token : <input type='text' name='token' > </input> </div>
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+<hr>
+<h1> NEW ALERT DATA  </h1>
+<body>
+<form method='POST' action='http://127.0.0.1:8081/data' enctype="multipart/form-data">
+<input type='hidden' name='format' value='xml'/>
+<div> Phone ID : <input type='text' name='phoneid'> </input> </div>
+<div> Token : <input type='text' name='token'> </input> </div>
+<div> Type : <input type='text' name='type'> </input> </div>
+<div> File to upload: <input type="file" name='mediafile' /></div>
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+<hr>
+<h1>  START ALERT   </h1>
+<body>
+<form method='POST' action='http://192.168.1.106:8080/alert' enctype="multipart/form-data">
+<input type='hidden' name='format' value='xml'/>
+<div> Phone ID : <input type='text' name='phoneid'> </input> </div>
+<div> Panic Alert : <input type='text' name='ispanic'> </input> </div>
+<div> Phone Number : <input type='text' name='phonenumber'> </input> </div>
+<div> Username: <input type='text' name='username'> </input> </div>
+<div> Token : <input type='text' name='token'> </input> </div>
+<div> Latitude : <input type='text' name='latitude'> </input> </div>
+<div> Longitude: <input type="text" name='longtitude' /></div>
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+<hr>
+<h1>  UPDATE SETTING   </h1>
+<body>
+<form method='POST' action='http://192.168.1.120:8080/setting/103' enctype="multipart/form-data">
+<input type='hidden' name='_method' value='GET'/>
+<input type='hidden' name='format' value='xml'/>
+<div> Phone ID : <input type='text' name='phoneid'> </input> </div>
+<div> Token : <input type='text' name='token'> </input> </div>
+<div> voiceDuration : <input type='text' name='voiceDuration'> </input> </div>
+<div> locationDuration : <input type='text' name='locationDuration'> </input> </div>
+<div> panicNumber : <input type='text' name='panicNumber'> </input> </div>
+<div> alertSendtoGroup : <input type='text' name='alertSendtoGroup'> </input> </div>
+<div> goodSamaritanStatus : <input type='text' name='goodSamaritanStatus'> </input> </div>
+<div> goodSamaritanRange : <input type='text' name='goodSamaritanRange'> </input> </div>
+<div> incomingGovernmentAlert : <input type='text' name='incomingGovernmentAlert'> </input> </div>
+<div> panicStatus : <input type='text' name='panicStatus'> </input> </div>
+<div> panicRange : <input type='text' name='panicRange'> </input> </div>
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+<hr>
+<h1> UPDATE LOCATION  </h1>
+<body>
+<form method='POST' action='http://127.0.0.1:8081/location' enctype="multipart/form-data">
+<input type='hidden' name='format' value='xml'/>
+<div> Phone ID : <input type='text' name='phoneid'> </input> </div>
+<div> Token : <input type='text' name='token'> </input> </div>
+<div> Latitude : <input type='text' name='latitude'> </input> </div>
+<div> Longtitude: <input type="text" name='longtitude' /></div>
+<div> <input type='submit' name='submit'> </div>
+</form>
+
+
+</body>
+
+</html>
