@@ -306,6 +306,8 @@ class Sos_Service_Alert {
     public function sendAlert() {
         $this->_logger->log('>>>>> START SENDING ALERT', Zend_Log::INFO);
         $this->_logger->log("From: $this->_fromName - phoneId:" . $this->_fromPhone->getId() . ", to groupId:$this->_toGroup, singleContact:$this->_singleContact, type:$this->_type, message: $this->_alertMessage, long message: $this->_alertMessageLong, location(latitude:$this->_latitude, longitude:$this->_longitude)", Zend_Log::INFO);
+        $startProcessTime = time();
+        
         $message = '';
         $success = 'false';
         $alertGroupId = '';
@@ -328,8 +330,17 @@ class Sos_Service_Alert {
                 // change: alert save before send $this->saveAlert();
                 // Send messages
                 $contacts = Sos_Service_Functions::getContactList($phoneId, $this->_toGroup, $this->_singleContact);
+                
+                $emailStartTime = time();
                 $this->_sendEmailAlert($contacts, $this->_type);
+                $emailEndTime = time();
+             
                 $this->_sendSmsAlert($contacts, $this->_type);
+                $smsEndTime = time();
+                
+                $this->_logger->log("== SEND ALERT - email sending takes: " . ($emailEndTime - $emailStartTime), Zend_Log::INFO);
+                $this->_logger->log("== SEND ALERT - SMS  sending takes: " . ($smsEndTime - $emailEndTime), Zend_Log::INFO);
+
                 if ($this->_type == 1) { // notice good samaritan
                     try {
                         $samaritanContacts = $this->_getGoodSamaritans($phoneId, $this->_latitude, $this->_longitude);
@@ -379,6 +390,8 @@ class Sos_Service_Alert {
             'alertToken' => $this->_alertToken,
             'id' => $this->_newAlertId
         );
+        $this->_logger->log("== SEND ALERT - TAKES: " . (time() - $startProcessTime), Zend_Log::INFO);
+
         $this->_logger->log("SEND ALERT Response: 'success' => $success, 'message' => $message, 'alertId' => $this->_newAlertId", Zend_Log::INFO);
         return $response;
         
@@ -405,7 +418,8 @@ class Sos_Service_Alert {
         $this->_logger->log(">>>>> START ALERT TASK, POST: $postString", Zend_Log::INFO);
         try {
             $parts = parse_url('http://' . $_SERVER['HTTP_HOST'] . '/webapp/checkin/alert-task');
-            $fp = fsockopen($parts['host'], 80, $errno, $errstr, 300);
+             $this->_logger->log("PORT : " . $_SERVER['SERVER_PORT'], Zend_Log::INFO);
+            $fp = fsockopen($parts['host'], $_SERVER['SERVER_PORT'] , $errno, $errstr, 300);
             $out = 'POST ' . $parts['path']. " HTTP/1.1\r\n";
             $out.= 'Host: ' . $parts['host']. "\r\n";
             $out.= "Content-Type: application/x-www-form-urlencoded\r\n";
