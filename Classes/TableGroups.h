@@ -11,7 +11,7 @@
 #import "TableGroup.h"
 #import "SOSBEACONAppDelegate.h"
 
-@interface TableGroups : UITableViewController<RestConnectionDelegate>{
+@interface TableGroups : UITableViewController<RestConnectionDelegate, UITextFieldDelegate>{
 	SOSBEACONAppDelegate *appDe;
 	RestConnection *rest;
 	NSMutableArray *arrayGroup;

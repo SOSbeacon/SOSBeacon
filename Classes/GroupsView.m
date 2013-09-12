@@ -18,26 +18,23 @@
 
 -(IBAction)addGroup:(id)sender
 {
-	NSLog(@"add group");
 }
+
 - (void)viewDidLoad {
-//	SOSBEACONAppDelegate *appDelegate = (SOSBEACONAppDelegate*)[[UIApplication sharedApplication] delegate];
+	appDelegate = (SOSBEACONAppDelegate*)[[UIApplication sharedApplication] delegate];
     [super viewDidLoad];
 	[self.view addSubview:navController.view];
 	navController.view.frame = CGRectMake(0, 0, 320, 480);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	NSLog(@"view will appear ****");
 	[super viewWillAppear:animated];
 	if(appDelegate.logout){
 		appDelegate.logout=NO;
 		[navController popToRootViewControllerAnimated:YES];
-		[tableGroups getData];
+//		[tableGroups getData];
 	}
-	[tableGroups getData];
-
-	
+	//[tableGroups getData];	
 }
 
 

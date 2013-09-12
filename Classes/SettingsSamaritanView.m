@@ -7,7 +7,6 @@
 //
 
 #import "SettingsSamaritanView.h"
-#import "AppSetting.h"
 #import "ValidateData.h"
 @implementation SettingsSamaritanView
 @synthesize btnRangeSamaritan,receiveRangeStatus,receiverSamaritan,samaritanStatus,lblSamaritanRange,receiveRange,btnSave,rest,actSetting;
@@ -130,6 +129,8 @@
 
 
 - (void)dealloc {
+	rest.delegate = nil;
+	[rest release];
 	[scoll release];
 	[actSetting release];
 	[lblSamaritanRange release];
@@ -143,7 +144,7 @@
 
 -(void)save
 {
-	NSLog(@"SaveSetting",nil);
+	//NSLog(@"SaveSetting",nil);
 	//save array;
 	[appDelegate.settingArray setObject:selectReciveRange forKey:ST_ReciveRange];
 	[appDelegate.settingArray setObject:selectSamaritanRange forKey:ST_SamaritanRange];

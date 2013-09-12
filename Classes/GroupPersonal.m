@@ -12,6 +12,8 @@
 @synthesize phone_id;
 @synthesize idGroup;
 @synthesize nameGroup;
+@synthesize allowEditName;
+@synthesize allowDelete;
 
 - (void)dealloc {
 	[idGroup release];

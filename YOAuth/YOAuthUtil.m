@@ -26,7 +26,9 @@ static NSString *const kOAuthVersion= @"1.0";
 
 + (NSString *)oauth_timestamp
 {
-	return [[NSString stringWithFormat:@"%d", time(NULL)] autorelease];
+	///return [[NSString stringWithFormat:@"%d", time(NULL)] autorelease];
+	return [NSString stringWithFormat:@"%d", time(NULL)];
+
 }
 
 + (NSString *)oauth_version

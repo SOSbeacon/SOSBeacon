@@ -8,10 +8,27 @@
 
 #import "AudioUploader.h"
 #import "Uploader.h"
-
+#import "AudioRecorder.h"
 @implementation AudioUploader
 @synthesize endUpload;
 
+
+
+-(void)playaudio
+{
+   // NSURL *bipURL = [NSURL fileURLWithPath:[AUDIO_FOLDER stringByAppendingPathComponent:[array objectAtIndex:0]]];
+    NSURL *bipURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"sound1_18:05:31" ofType:@"caf"]];
+	NSError *error;
+	AVAudioPlayer *soundBip = [[AVAudioPlayer alloc] initWithContentsOfURL:bipURL error:&error];
+	if(error)
+	{
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ERROR" message:@"Can't play sound" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[alert show];
+		[alert release];
+	}
+    soundBip.volume = 1.0;
+	[soundBip play];    
+}
 - (id)init
 {
 	self = [super init];
@@ -54,7 +71,7 @@
 	for (NSString *str in fileList) {
 		NSRange foundRange=[[str lowercaseString] rangeOfString:@".caf"];
 		if(foundRange.location != NSNotFound) {
-			NSLog(@"file : %@",str);
+		//	NSLog(@"file : %@",str);
 			[array addObject:str];
 		}
 	}
@@ -69,22 +86,28 @@
 		NSArray *key;
 		NSArray *obj;
 		if (appDelegate.uploader.isAlert==TRUE) {
-			
+			NSLog(@"send with alert");
 			key = [NSArray arrayWithObjects:@"phoneId",@"alertId",@"token",@"type",nil];
 			obj = [NSArray arrayWithObjects:[NSString stringWithFormat:@"%d",appDelegate.phoneID],[NSString stringWithFormat:@"%d",uploader.uploadId],appDelegate.apiKey,@"1",nil];
 			
 		}
 		else {
+			NSLog(@"send with no alert");
 			key = [NSArray arrayWithObjects:@"phoneId",@"alertlogType",@"token",@"type",nil];
 			obj = [NSArray arrayWithObjects:[NSString stringWithFormat:@"%d",appDelegate.phoneID],@"2",appDelegate.apiKey,@"1",nil];
 			
 		}
 		
-		
 		NSDictionary *params = [NSDictionary dictionaryWithObjects:obj forKeys:key];
 		NSData *theData = [NSData dataWithContentsOfFile:[AUDIO_FOLDER stringByAppendingPathComponent:[array objectAtIndex:0]]];
-		
-		[restConnection uploadPath:@"/data?format=json" withOptions:params withFileData:theData];		
+        //NSLog(@"send data to sever : %@  and audio size: %d",params,[theData length]);
+		[restConnection uploadPath:@"/data?format=json" withOptions:params withFileData:theData];
+        
+        
+        
+      timer =  [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerTick) userInfo:nil repeats:YES];
+        countTime =0;
+        
 	}
 	else
 	{
@@ -111,6 +134,8 @@
 }
 
 - (void)removeAllOldFile {
+    
+    
 	NSArray *fileList = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:AUDIO_FOLDER error:nil];
 	for (NSString *str in fileList) {
 		NSRange foundRange=[[str lowercaseString] rangeOfString:@".caf"];
@@ -118,11 +143,17 @@
 			[[NSFileManager defaultManager] removeItemAtPath:[AUDIO_FOLDER stringByAppendingPathComponent:str] error:nil];
 		}
 	}
+   
 }
 
 #pragma mark -
 #pragma mark RestConnectionDelegate
 - (void)finishRequest:(NSDictionary *)arrayData andRestConnection:(id)connector {
+	//NSLog(@"finish upload audio: %@",arrayData);
+    countTime =0;
+    [timer invalidate];
+    timer = nil;
+    
 	if([[[arrayData objectForKey:@"response"] objectForKey:@"success"] isEqualToString:@"true"])
 	{
 		[[NSFileManager defaultManager] removeItemAtPath:[AUDIO_FOLDER stringByAppendingPathComponent:[array objectAtIndex:0]] error:nil];
@@ -130,20 +161,57 @@
 		[self uploadAudio];
 	}
 	else
-	{		
-		[uploader setTitle1:[NSString stringWithFormat:@"Upload audio fail: %@",[array objectAtIndex:0]]];
-		[array removeObjectAtIndex:0];
-		[self uploadAudio];
-	}
-}
-
-- (void)cantConnection:(NSError*)error andRestConnection:(id)connector {
-	if(endUpload)
 	{
-		endUpload=NO;
-		uploader.isAudioUpOK = YES;
+        [uploader setTitle1:[NSString stringWithFormat:@"Upload audio fail: %@",[array objectAtIndex:0]]];
+        [array removeObjectAtIndex:0];
+        [self performSelector:@selector(uploadAudio) withObject:nil afterDelay:1.2];
 	}
-	[uploader finishUpload];
 }
 
+- (void)cantConnection:(NSError*)error andRestConnection:(id)connector 
+{
+//    NSLog(@"error when upload audio: %@",error);
+//    //////
+//    [uploader setTitle1:[NSString stringWithFormat:@"Upload audio fail: %@",[array objectAtIndex:0]]];
+//
+//    if (array) {
+//        [array release];
+//        array = nil;
+//    }
+//	if(endUpload)
+//	{
+//		endUpload=NO;
+//         uploader.isAudioUpOK = YES;
+//	}
+//    [uploader performSelector:@selector(finishUpload) withObject:nil afterDelay:3.0];
+//    
+    
+
+}
+-(void)timerTick
+{
+    countTime++;
+   // NSLog(@" time : %d",countTime);
+    if(countTime == 60)
+    {
+        NSLog(@"error when upload audio can not connection ");
+        [uploader setTitle1:[NSString stringWithFormat:@"Upload audio fail: %@",[array objectAtIndex:0]]];
+        
+        if (array) {
+            [array release];
+            array = nil;
+        }
+        if(endUpload)
+        {
+            endUpload=NO;
+            uploader.isAudioUpOK = YES;
+        }
+        [uploader performSelector:@selector(finishUpload) withObject:nil afterDelay:3.0];
+        
+        countTime =0;
+        [timer invalidate];
+        timer = nil;
+        
+    }
+}
 @end

@@ -62,7 +62,7 @@ static NSString *const kYOSUserAgentPrefix = @"YosCocoaSdk/0.5";
 	NSData *connectionResponseData = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&urlResponse error:&rspError];
 	
 	//[rspError autorelease];	
-	[connectionResponseData autorelease];
+	//[connectionResponseData autorelease];
 	
 	YOSResponseData *serviceResponseData = [YOSResponseData responseWithData:connectionResponseData 
 															  andURLResponse:urlResponse];
@@ -71,14 +71,21 @@ static NSString *const kYOSUserAgentPrefix = @"YosCocoaSdk/0.5";
 
 - (BOOL)sendAsyncRequestWithDelegate:(id)delegate
 {
-	self.responseData = [[NSMutableData data] retain];
+    //fix leak
+	//self.responseData = [[NSMutableData data] retain];
+    self.responseData = [NSMutableData data];
 	[self setRequestDelegate:delegate];
 	
 	NSMutableURLRequest *urlRequest = [self buildUrlRequest];
+    //fix leak;
 	// self.URLConnection = [[NSURLConnection connectionWithRequest:urlRequest delegate:self] retain];
+//	[self setURLConnection:[[NSURLConnection alloc] initWithRequest:urlRequest delegate:self startImmediately:YES]];
 	
-	[self setURLConnection:[[NSURLConnection alloc] initWithRequest:urlRequest delegate:self startImmediately:YES]];
-	
+    NSURLConnection *url = [[NSURLConnection alloc] initWithRequest:urlRequest delegate:self startImmediately:YES];
+    [self setURLConnection: url];
+    [url release];
+
+    
 	BOOL connectionCreated = (self.URLConnection != nil);
 	
 	return connectionCreated;
@@ -224,8 +231,9 @@ static NSString *const kYOSUserAgentPrefix = @"YosCocoaSdk/0.5";
 
 - (void)connection:(NSURLConnection *)aConnection didReceiveResponse:(NSURLResponse *)aResponse
 {
-	if(self.response) [self.response release];
+	//if(self.response) [self.response release];
 	
+    if(self.response) self.response = nil;
 	self.response = [aResponse retain];
 	[self.responseData setLength:0];
 	

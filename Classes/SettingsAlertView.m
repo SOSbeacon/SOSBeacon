@@ -8,7 +8,6 @@
 
 #import "SettingsAlertView.h"
 #import "EmergencyView.h"
-#import "AppSetting.h"
 @implementation SettingsAlertView
 @synthesize incomingGovernment,txtPanicPhone,lblSendToAlert,voiceRecord,rest,btnSave,actSetting;
 @synthesize flag;
@@ -31,8 +30,6 @@
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
-	//selectAlert = [[appDelegate.settingArray objectForKey:ST_SendToAlert] retain] ;
-//	NSLog(@" view did load : %@",selectAlert);
 	self.scoll.contentSize =  CGSizeMake(320, 800);
 	self.title=@"Alert Settings";
 	rest = [[RestConnection alloc] initWithBaseURL:SERVER_URL];
@@ -66,6 +63,8 @@
 
 
 - (void)dealloc {
+	rest.delegate = nil;
+	[rest release];
 	[scoll release];
 	[selectAlert  release];
 	[typeArray release];
@@ -144,23 +143,18 @@
 		
 			switch (buttonIndex) {
 				case 0:
-					//session=@"1";
 					voiceRecord.text = @"1 Session";
 					break;
 				case 1:
-					//session=@"2";
 					voiceRecord.text = @"2 Sessions";
 					break;
 				case 2:
-					//session=@"3";
 					voiceRecord.text = @"3 Sessions";
 					break;
 				case 3:
-					//session=@"4";
 					voiceRecord.text = @"4 Sessions";
 					break;
 				case 4:
-					//session=@"5";
 					voiceRecord.text = @"5 Sessions";
 					break;
 				case 5:
@@ -170,19 +164,19 @@
 					break;
 					
 			}
-			//[appDelegate.settingArray setObject:session forKey:ST_VoiceRecordDuration];
 		}
 		
 		else if(editIndex==4) 
 		{
 			NSInteger i = buttonIndex;
-			NSLog(@" i = %d",i);
-			NSLog(@" button index = %d",buttonIndex);
 			lblSendToAlert.text = [groupArray objectAtIndex:i];
-			selectAlert  = [[typeArray objectAtIndex:i] retain];
-			//[appDelegate.settingArray setObject:[typeArray objectAtIndex:i] forKey:ST_SendToAlert];
-			//NSLog(@"  setting array :%@:",[appDelegate.settingArray objectForKey:ST_SendToAlert])	;			
-		
+			if (selectAlert)
+			{
+				//NSLog(@"release : selectAlert");
+				[selectAlert release];
+				selectAlert = nil;
+			}
+			selectAlert  = [[typeArray objectAtIndex:i] retain];		
 		}
 		}
 }
@@ -190,24 +184,16 @@
 -(void)save
 {
 	[txtPanicPhone resignFirstResponder];
-	//save array;
 	if ([incomingGovernment isOn]) 
 	{
-		//NSLog(@" 1111 ");
 		[appDelegate.settingArray setObject:@"1" forKey:ST_IncomingGovernment];
 	}
 	else
 	{
-		//NSLog(@" 1111 ");
 		[appDelegate.settingArray setObject:@"0" forKey:ST_IncomingGovernment];
 	}
-	NSLog(@"selectalert : %@",selectAlert);
 	[appDelegate.settingArray setObject:selectAlert forKey:ST_SendToAlert];
 	[appDelegate.settingArray setObject:[voiceRecord.text substringToIndex:1] forKey:ST_VoiceRecordDuration];
-	
-	
-	NSLog(@"3333");
-	
 	save = TRUE;
 	btnSave.enabled = FALSE;
 	actSetting.hidden=NO;
@@ -264,29 +250,29 @@
 		
 		
 
-		NSLog(@" %@",value1);
-		NSLog(@" %@",strcut);
+		//NSLog(@" %@",value1);
+		//NSLog(@" %@",strcut);
 		if ([strcut isEqualToString:@"+1"]||[strcut  isEqualToString:@"1+"]) 
 		{
 			if ([value1  length] >2) 
 			{
 				NSString *phone = [[value1 substringFromIndex:2] retain];
 				txtPanicPhone.text = phone;
-				NSLog(@" %@",phone);
+			//	NSLog(@" %@",phone);
 				[value1 release];
 				[phone release];
 			}else 
 			{   
 				txtPanicPhone.text = @"0";
 				[value1 release];
-			//	value1 =@"0";
+				//value1 =@"0";
 			}
 			
 			
 		}else
 			if (b == '1' || b=='+')
 			{
-				NSLog(@"alo");
+			//	NSLog(@"alo");
 				if ([value1  length] >1) 
 				{
 					NSString *phone = [[value1 substringFromIndex:1] retain];
@@ -298,7 +284,7 @@
 				{   
 					[value1 release];
 					txtPanicPhone.text = @"0";
-				//	value1 = @"0";
+					//value1 = @"0";
 				}			
 			}
 			else 
@@ -314,7 +300,7 @@
 		
 		///
 		[appDelegate.settingArray setObject:txtPanicPhone.text forKey:ST_EmergencySetting];
-		NSLog(@" save ST_sendtoalert : %@ ",[appDelegate.settingArray objectForKey:ST_SendToAlert]);
+	//	NSLog(@" save ST_sendtoalert : %@ ",[appDelegate.settingArray objectForKey:ST_SendToAlert]);
 		
 		///
 		
@@ -367,153 +353,7 @@
 										  cancelButtonTitle:@"Yes" otherButtonTitles:@"No",nil];
 	[alert show];
 	[alert release];
-	/*
-	[txtPanicPhone resignFirstResponder];
-	//save array;
-	if ([incomingGovernment isOn]) 
-	{
-		//NSLog(@" 1111 ");
-		[appDelegate.settingArray setObject:@"1" forKey:ST_IncomingGovernment];
-	}
-	else
-	{
-		//NSLog(@" 1111 ");
-		[appDelegate.settingArray setObject:@"0" forKey:ST_IncomingGovernment];
-	}
-	NSLog(@"selectalert : %@",selectAlert);
-	NSLog(@"sao the nhi");
-	[appDelegate.settingArray setObject:selectAlert forKey:ST_SendToAlert];
-	NSLog(@" 222");
-	[appDelegate.settingArray setObject:[voiceRecord.text substringToIndex:1] forKey:ST_VoiceRecordDuration];
-	
-	
-	
-	
-	save = TRUE;
-	btnSave.enabled = FALSE;
-	actSetting.hidden=NO;
-	[actSetting startAnimating];
-		if ([txtPanicPhone.text isEqualToString:@""]|| txtPanicPhone.text == nil)	
-	{
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error"
-															message:@"Emergency phone number must be entered to proceed"
-														   delegate:nil
-												  cancelButtonTitle:@"Ok"
-												  otherButtonTitles:nil];
-		[alertView show];
-		[self performSelector:@selector(DimisAlertView:) withObject:alertView afterDelay:2];
-		[alertView release];
-		//save = FALSE;
-		btnSave.enabled = TRUE;
-		[actSetting stopAnimating];
-		actSetting.hidden = YES;
-		txtPanicPhone.text = @"0";
-		return;
- 		
-	}
-		else if(!(checkPhone(txtPanicPhone.text))) {
-		//save = FALSE;
-		btnSave.enabled = TRUE;
-		[actSetting stopAnimating];
-		actSetting.hidden = YES;
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error"
-															message:@"Emergency phone number is invalid"
-														   delegate:nil
-												  cancelButtonTitle:@"Ok"
-												  otherButtonTitles:nil];
-		[alertView show];
-		[self performSelector:@selector(DimisAlertView:) withObject:alertView afterDelay:CONF_DIALOG_DELAY_TIME];
-		[alertView release];
-		return;
-	}
-	else
-	{
-		
-		
-		///
 
-		
-		NSString *value1 =[[NSString alloc] initWithString:txtPanicPhone.text];
-		char b =[value1 characterAtIndex:0];
-		
-		
-		///////
-		NSString *strcut = [value1 substringToIndex:2];
-		NSLog(@" %@",value1);
-		NSLog(@" %@",strcut);
-		if ([strcut isEqualToString:@"+1"]||[strcut  isEqualToString:@"1+"]) 
-		{
-			if ([value1  length] >2) 
-			{
-				NSString *phone = [[value1 substringFromIndex:2] retain];
-				txtPanicPhone.text = phone;
-				NSLog(@" %@",phone);
-				[value1 release];
-				[phone release];
-			}else 
-			{   
-				txtPanicPhone.text = @"0";
-				[value1 release];
-				value1 =@"0";
-			}
-			
-			
-		}else
-		if (b == '1' || b=='+')
-		{
-			NSLog(@"alo");
-			if ([value1  length] >1) 
-			{
-				NSString *phone = [[value1 substringFromIndex:1] retain];
-				[appDelegate.settingArray setObject:phone forKey:ST_EmergencySetting];
-				txtPanicPhone.text = phone;
-				[value1 release];
-				[phone release];
-			}else 
-			{   
-				[value1 release];
-				txtPanicPhone.text = @"0";
-				value1 = @"0";
-			}			
-		}
-		else 
-		{
-			[appDelegate.settingArray setObject:value1 forKey:ST_EmergencySetting];
-			[value1 release];
-		}
-		
-		
-		////
-		
-	
-		
-		///
-		[appDelegate.settingArray setObject:txtPanicPhone.text forKey:ST_EmergencySetting];
-		NSLog(@" save ST_sendtoalert : %@ ",[appDelegate.settingArray objectForKey:ST_SendToAlert]);
-		
-		 ///
-		
-		
-		
-		NSArray *key1 = [NSArray arrayWithObjects:@"id",@"phoneId",@"token",@"recordDuration",@"emergencyNumber",@"alertSendToGroup",@"goodSamaritanStatus",@"goodSamaritanRange",@"panicStatus",@"panicRange",@"incomingGovernmentAlert",nil];
-		NSArray *obj1 = [NSArray arrayWithObjects:[NSString stringWithFormat:@"%d",appDelegate.settingId],
-						 [NSString stringWithFormat:@"%d",appDelegate.phoneID],
-						 appDelegate.apiKey,
-						  [appDelegate.settingArray objectForKey:ST_VoiceRecordDuration],
-						 [appDelegate.settingArray objectForKey:ST_EmergencySetting],
-						 [appDelegate.settingArray objectForKey:ST_SendToAlert],
-						 [appDelegate.settingArray objectForKey:ST_ReceiverSamaritan],
-						  [appDelegate.settingArray objectForKey:ST_ReciveRange],
-						 [appDelegate.settingArray objectForKey:ST_SamaritanStatus],
-						 [appDelegate.settingArray objectForKey:ST_SamaritanRange],
-						 [appDelegate.settingArray  objectForKey:ST_IncomingGovernment],
-						 nil];
-		NSDictionary *param1 =[NSDictionary dictionaryWithObjects:obj1 forKeys:key1];
-		flag =1;
-		[rest putPath:[NSString stringWithFormat:@"/setting/%d?format=json",appDelegate.settingId] withOptions:param1];
-						 
-	}	
-	*/
 	
 }
 
@@ -543,7 +383,7 @@
 	if (flag == 1) {
 		
 	
-	NSLog(@" setting alert array response : %@",arrayData);
+//	NSLog(@" setting alert array response : %@",arrayData);
 	[actSetting stopAnimating];
 	actSetting.hidden = YES;
 	btnSave.enabled = TRUE;
@@ -561,11 +401,19 @@
 					[self performSelector:@selector(DimisAlertView:) withObject:alertView afterDelay:CONF_DIALOG_DELAY_TIME];
 					[alertView release];
 					save = NO;
-				
+				/// save phone for offline mode
+					NSString *emergenceFile = [DOCUMENTS_FOLDER stringByAppendingPathComponent:@"emergencyNumber.plist"];
+					NSMutableDictionary *emergencePhone = [[NSMutableDictionary alloc] init];
+					
+					[emergencePhone setObject:txtPanicPhone.text forKey:@"emerPhone"];
+					
+					[emergencePhone writeToFile:emergenceFile atomically:YES];
+					NSLog(@" emergence phone : %@",emergencePhone);
+					[emergencePhone release];
 				
 			}
 		}else {
-			NSLog(@" error roi");
+		//	NSLog(@" error roi");
 			
 		}
 	
@@ -574,14 +422,6 @@
 	if (flag == 2) 
 	{
 		
-		/*
-		 UIActionSheet *actionSheet3 = [[UIActionSheet alloc] initWithTitle:@""
-		 delegate:self 
-		 cancelButtonTitle:@"Cancel"
-		 destructiveButtonTitle:nil 
-		 otherButtonTitles:@"Family",@"Friends",
-		 @"Neighborhood Watch",@"Group A",@"Group B",@"Family & Friends",nil];
-		 */
 		actionSheet3 = [[UIActionSheet alloc] initWithTitle:@""
 												   delegate:self 
 										  cancelButtonTitle:nil
@@ -590,12 +430,7 @@
 		 groupArray = [[NSMutableArray alloc] init];
 		 typeArray = [[NSMutableArray alloc] init];
 
-		
-		NSLog(@" get group : %@",arrayData);
-		
-		
-		
-		NSLog(@" ST_sendtoAlert in finish request: %@",[appDelegate.settingArray objectForKey:ST_SendToAlert]);
+	//	NSLog(@" ST_sendtoAlert in finish request: %@",[appDelegate.settingArray objectForKey:ST_SendToAlert]);
 		if ([[[arrayData objectForKey:@"response"] objectForKey:@"success"] isEqualToString:@"true"]) {
 			NSDictionary *data = [[arrayData objectForKey:@"response"] objectForKey:@"data"];
 			
@@ -611,19 +446,17 @@
 				if( type == [[appDelegate.settingArray objectForKey:ST_SendToAlert] intValue])
 				{
 				lblSendToAlert.text = [dict objectForKey:@"name"];
-					selectAlert = [[NSString alloc] initWithFormat:@"%d",type] ;
+				selectAlert =[[NSString stringWithFormat:@"%d",type] retain];
 				}
 			}
-			NSLog(@"group array : %@",groupArray);
-			//[groupArray release];
-			//[typeArray release];
+			//NSLog(@"group array : %@",groupArray);
 			
-		}else {
-			NSLog(@"getcontact error");
+		}else 
+		{
+			//NSLog(@"getcontact error");
 		}
 		
 	}	
-	
 	
 }
 
@@ -631,7 +464,6 @@
 #pragma mark -network fail
 
 -(void)cantConnection:(NSError *)error andRestConnection:(id)connector{
-	NSLog(@"can't connect to internet");
 	btnSave.enabled = TRUE;
 	[actSetting stopAnimating];
 	actSetting.hidden=YES;

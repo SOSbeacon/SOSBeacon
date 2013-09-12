@@ -11,32 +11,23 @@
 
 @implementation SaveImageOperation
 @synthesize imageToSave;
-
+@synthesize imageOritation;
 @synthesize mainDelegate;
 @synthesize fileToWriteTo;
 - (id)initWithImage:(UIImage*)image 
 {
     if (![super init]) return nil;
+    self =[super init];
 	self.imageToSave=image;
-	
     return self;
 }
 - (void)main {
-	NSLog(@"SaveImageOperation:0",nil);
 	isDone=NO;
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-
 	UIImage *newImage = [self scaleAndRotateImage:self.imageToSave];
 	NSData *theData = UIImageJPEGRepresentation(newImage, 0.1);
-	NSLog(@"theData:length:%i",[theData length]);
-
-	NSLog(@"SaveImageOperation:1",nil);
 	[theData writeToFile:fileToWriteTo atomically:YES];
-
-	NSLog(@"SaveImageOperation:2",nil);
 	[mainDelegate performSelectorOnMainThread:@selector(finishedSavingImage)	  withObject:nil    waitUntilDone:YES];
-	NSLog(@"SaveImageOperation:3",nil);
-		
 	[pool release];
 	
 }
@@ -76,6 +67,15 @@
 	CGSize imageSize = CGSizeMake(CGImageGetWidth(imgRef), CGImageGetHeight(imgRef));
 	CGFloat boundHeight;
 	UIImageOrientation orient = image.imageOrientation;
+    //NSLog(@" image Orientation **** 1 :%d",orient);
+    NSString *model= [[UIDevice currentDevice] model]; 
+    //NSLog(@"1%@1",model);
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5.0 &&![model isEqualToString:@"iPod touch"])
+    {
+        orient = imageOritation;
+        //NSLog(@" image Orientation IOS_5 :%d",orient); 
+    }
+
 	switch(orient) {
 			
 		case UIImageOrientationUp: //EXIF = 1

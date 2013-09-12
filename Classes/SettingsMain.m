@@ -14,7 +14,6 @@
 #import "SettingsAboutView.h"
 #import "TellUs.h"
 #import "EmailView.h"
-#import "AppSetting.h"
 @implementation SettingsMain
 @synthesize mainTable;
 @synthesize flag;
@@ -24,7 +23,9 @@
 	if (flag == 1) 
 	{
 		NSString *pass = [appDelegate.informationArray objectForKey:@"password"];
+        //NSLog(@"read file");
 		NSString *password =[[NSString alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@/info.plist",DOCUMENTS_FOLDER]];
+        //NSString *password =[[NSString alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@/info.plist",DOCUMENTS_FOLDER] encoding:[NSString defaultCStringEncoding] error:nil];
 		if ([password isEqualToString:@"1"] && ([pass length] == 0)) 
 		{
 			flag = 2;
@@ -38,8 +39,8 @@
 		if(appDelegate.contactCount == 0)
 			{
 				flag = 3;
-				NSLog(@"show alert");
-				NSLog(@" -----------------");
+				//NSLog(@"show alert");
+				//NSLog(@" -----------------");
 				UIAlertView *alert =[[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"doYouWantAddcontact",@"")
 															  delegate:self cancelButtonTitle:@"Yes"
 													 otherButtonTitles:@"Not Now",nil];
@@ -72,8 +73,8 @@
 					if(appDelegate.contactCount == 0)
 					{
 						flag = 3;
-						NSLog(@"show alert");
-						NSLog(@" -----------------");
+					//	NSLog(@"show alert");
+					//	NSLog(@" -----------------");
 						UIAlertView *alert =[[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"doYouWantAddcontact",@"")
 																	  delegate:self cancelButtonTitle:@"Yes"
 															 otherButtonTitles:@"Not Now",nil];
@@ -111,7 +112,7 @@
 
 -(void)viewWillAppear:(BOOL)animated
 {
-	NSLog(@"**************");
+	//NSLog(@"**************");
 	if (appDelegate.flagSetting == 100)
 	{
 		appDelegate.flagSetting = 101;
@@ -124,15 +125,18 @@
 	else
 	if (appDelegate.flagSetting == 3) 
 	{
-		NSLog(@"--------");
+		//NSLog(@"--------");
 		NSString *pass = [appDelegate.informationArray objectForKey:@"password"];
+        //NSLog(@"read file");
 		NSString *password =[[NSString alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@/info.plist",DOCUMENTS_FOLDER]];
-		NSString *phoneString =[[appDelegate.settingArray objectForKey:ST_EmergencySetting] retain];
-		NSLog(@"%@  %d",password,[pass length]);
+       //  NSString *password =[[NSString alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@/info.plist",DOCUMENTS_FOLDER] encoding:[NSString defaultCStringEncoding] error:nil];
+        
+		NSString *phoneString =[(NSString *)[appDelegate.settingArray objectForKey:ST_EmergencySetting] retain];
+		//NSLog(@"%@  %d",password,[pass length]);
 
 		if ([phoneString isEqualToString:@"0"])
 		{
-			NSLog(@" hoi phone number ");
+			//NSLog(@" hoi phone number ");
 			flag = 1;
 			UIAlertView *alert =[[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"EmegencyNotSet",@"")
 														  delegate:self cancelButtonTitle:@"Ok"
@@ -145,7 +149,7 @@
 		if (([password isEqualToString:@"1"]) && ([pass length] == 0)) 
 			{
 				flag = 2;
-				NSLog(@"hoi pass");
+				//NSLog(@"hoi pass");
 				UIAlertView *alert =[[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"Establish",@"")
 															delegate:self cancelButtonTitle:@"Yes"
 													otherButtonTitles:@"Not Now",nil];
@@ -156,7 +160,7 @@
 		if(appDelegate.contactCount == 0)
 		{
 			flag = 3;
-			NSLog(@" hoi con tact");
+		//	NSLog(@" hoi con tact");
 			UIAlertView *alert =[[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"doYouWantAddcontact",@"")
 														  delegate:self cancelButtonTitle:@"Yes"
 												 otherButtonTitles:@"Not Now",nil];
@@ -180,7 +184,7 @@
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
-					 
+	emailer=[[EmailView alloc] init];				 
 	UIBarButtonItem *backButton = [[UIBarButtonItem alloc] 
 								   initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:nil action:nil];
 	[self.navigationItem setBackBarButtonItem:backButton];
@@ -287,8 +291,9 @@
 
 
 - (void)dealloc {
+	[emailer release];
 	[aryDataSource release];
-	[self.mainTable release];
+	[mainTable release];
     [super dealloc];
 }
 
@@ -412,12 +417,11 @@
 		{
 			//[EmailView sendTellAFriendEmail:self tintColor:self.navigationController.navigationBar.tintColor];
 			
-			EmailView *emailer=[[EmailView alloc] init];
+	
 			emailer.toAddresses=[NSArray array];
 			emailer.subject=@"";
 			emailer.body=@"";
 			emailer.mainView=self.parentViewController;
-			//emailer.tintColor=self.navigationController.navigationBar.tintColor;
 			[emailer showEmail];
 		//	[emailer release];
 			 

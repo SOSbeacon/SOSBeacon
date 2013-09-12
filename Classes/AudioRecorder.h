@@ -18,36 +18,24 @@
 @interface AudioRecorder : UIView <AVAudioSessionDelegate,AVAudioRecorderDelegate>{
 	SOSBEACONAppDelegate *appDelegate;
 	AVAudioRecorder *soundRecorder;
-	
 	NSTimer *countDown;
-	
 	BOOL isRecording;
-	
 	IBOutlet UILabel *timeDisplay;
 	IBOutlet UILabel *sizeDisplay;
 	IBOutlet UILabel *blockDisplay;
-	
 	CaptorView *captorView;
-	
 	NSInteger block;
-	
 	BOOL isUpload;
-	
 	NSString *currentFile;
 }
 
 @property (nonatomic, retain) AVAudioRecorder *soundRecorder;
-
 @property (nonatomic, retain) IBOutlet UILabel *timeDisplay;
 @property (nonatomic, retain) IBOutlet UILabel *sizeDisplay;
-
 @property (nonatomic, assign) NSTimer *countDown;
-
 @property (nonatomic) NSInteger block;
-
 - (void)initAudio;
 - (IBAction)closeAndStop;
-
 - (void)startRecord;
 
 @end

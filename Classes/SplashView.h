@@ -24,4 +24,6 @@
 @property (nonatomic, retain) IBOutlet UIView *viewSplash;
 @property (nonatomic, retain) IBOutlet UIImageView *splashImageView;
 @property BOOL noConnection;
+-(void)ShowLoading;
+- (void)removeView;
 @end

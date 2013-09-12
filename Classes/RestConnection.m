@@ -8,8 +8,11 @@
 
 #import "RestConnection.h"
 #import "NSDictionaryParam.h"
-#import "JSON.h"
+//#import "JSON.h"
 #import "NSStringEscaping.h"
+#import "JSONKit.h"
+
+#import "SOSBEACONAppDelegate.h"
 
 @implementation RestConnection
 @synthesize delegate;
@@ -21,14 +24,16 @@
 	{
 		baseURLString = baseURL;
 	}
+	//data1 = [[NSMutableData alloc] init];
+
 	return self;
 }
 
 - (void) dealloc
 {
-	NSLog(@"dealloc connection");
+	//NSLog(@"dealloc connection");
 	[baseURLString release];
-	[data1 release];	
+//	[data1 release];
 	[super dealloc];
 }
 
@@ -43,6 +48,8 @@
 	[mutableRequest setValue:@"application/xhtml+xml" forHTTPHeaderField:@"accept"];
 	[mutableRequest setHTTPMethod:@"GET"];
  
+    [mutableRequest setTimeoutInterval:30];
+    
 	urlConnection = [[NSURLConnection alloc] initWithRequest:mutableRequest delegate:self];
 	[mutableRequest release];
 	
@@ -58,8 +65,8 @@
 	NSData *bodyData = [[options toQueryString] dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
 	[mutableRequest setHTTPBody:bodyData];
 	
-	NSLog(@"POST param: %@",[options toQueryString]);
-	printf("\n \n");
+//	NSLog(@"POST param: %@",[options toQueryString]);
+//	printf("\n \n");
 	urlConnection = [[NSURLConnection alloc] initWithRequest:mutableRequest delegate:self];
 	[mutableRequest release];
 	
@@ -76,7 +83,7 @@
 	NSData *bodyData = [[options toQueryString] dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
 	[mutableRequest setHTTPBody:bodyData];
 	
-	NSLog(@"oquerystring: %@",[options toQueryString]);
+	//NSLog(@"oquerystring: %@",[options toQueryString]);
 	
 	urlConnection = [[NSURLConnection alloc] initWithRequest:mutableRequest delegate:self];
 	[mutableRequest release];
@@ -95,7 +102,7 @@
 	NSData *bodyData = [[options toQueryString] dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
 	[mutableRequest setHTTPBody:bodyData];
 	
-	NSLog(@"toquerystring:  %@",[options toQueryString]);
+	//NSLog(@"toquerystring:  %@",[options toQueryString]);
 	
 	urlConnection = [[NSURLConnection alloc] initWithRequest:mutableRequest delegate:self];
 	[mutableRequest release];
@@ -105,14 +112,18 @@
 - (void)uploadPath:(NSString*)path withOptions:(NSDictionary*)options withFilePath:(NSString*)filePath {
 	NSData *data = [[NSData alloc] initWithContentsOfFile:filePath];
 	[self uploadPath:path withOptions:options withFileData:data];
+    [data release];
 }
 
 - (void)uploadPath:(NSString*)path withOptions:(NSDictionary*)options withFileData:(NSData*)dataF {
 	NSURL *url = [NSURL URLWithString:path
 						relativeToURL:[NSURL URLWithString:baseURLString]];
 	
-	NSMutableURLRequest *mutableRequest = [[NSMutableURLRequest alloc] initWithURL:url];
-	
+//	NSMutableURLRequest *mutableRequest = [[NSMutableURLRequest alloc] initWithURL:url];
+NSMutableURLRequest *mutableRequest = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:60.0];
+	//bon 19.10.2011 add time out for request
+//	[mutableRequest setTimeoutInterval:90];
+	//
 	NSString *boundary = @"--ngocanh";
 	
 	[mutableRequest setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary] forHTTPHeaderField:@"Content-Type"];
@@ -130,17 +141,33 @@
 	[postbody appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
 	
 	if([[options objectForKey:@"type"] isEqualToString:@"0"])
-		[postbody appendData:[[NSString stringWithString:@"Content-Disposition: form-data; name=\"data\"; filename=\"picture.jpg\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+    {
+		[postbody appendData:[[NSString stringWithString:@"Content-Disposition: form-data; name=\"mediafile\"; filename=\"picture.jpg\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [postbody appendData:[[NSString stringWithString:@"Content-Type: image/png\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        //NSLog(@"image");
+
+    }
 	else
-		[postbody appendData:[[NSString stringWithString:@"Content-Disposition: form-data; name=\"data\"; filename=\"sound.caf\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+    {//audio/x-caf    audio/basic
+        
+        
+		[postbody appendData:[[NSString stringWithString:@"Content-Disposition: form-data; name=\"mediafile\"; filename=\"sound.caf\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [postbody appendData:[[NSString stringWithString:@"Content-Type: audio/x-caf\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        //NSLog(@"audio");
+
+    }
 	
-	[postbody appendData:[[NSString stringWithString:@"Content-Type: image/png\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
 	[postbody appendData:[NSData dataWithData:dataF]];
 	[postbody appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-	//NSLog(@"Upload request:%@",postbody);
+    
+    if([[options objectForKey:@"type"] isEqualToString:@"0"])
+    {
+    }else
+    {
+        //NSLog(@"Upload request:---->>>>>>%d",[postbody length]);
+    }
 	
 	[mutableRequest setHTTPBody:postbody];
-	
 	urlConnection = [[NSURLConnection alloc] initWithRequest:mutableRequest delegate:self];
 	[mutableRequest release];
 	
@@ -165,46 +192,42 @@
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)aResponse;
 {
-	NSLog(@"Data Size:%i",[data1 length]);
-	
-	[data1 release];
-	self.data1 = [[NSMutableData alloc] init];
-	
-	
+	data1 = nil;
+	data1 = [[NSMutableData alloc] init];
 	//	[delegate didReceiveResponse:response];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)newData;
 {
+   // NSLog(@"conection did recieve data");
 	[data1 appendData:newData];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection;
 {	
 	[connection release];
-	//NSLog(@"In connectionDidFinishLoading:");
 	if(self.delegate!=nil&&[self.delegate respondsToSelector:@selector(finishRequest:andRestConnection:)])
 	{
-		SBJSON *parser = [SBJSON new];
 		NSString *strtmp = [[NSString alloc] initWithData:data1 encoding:NSUTF8StringEncoding];
-		//NSLog(@"string : %@",strtmp);
-		NSDictionary *array = [parser objectWithString:strtmp];
-		[parser release];
+		[data1 release];
+		data1 = nil;
+		NSDictionary *array = [strtmp objectFromJSONString];
 		[strtmp release];
 		//NSLog(@" %@ ",array);
-	//	NSLog(@"array in connectiondidfinishloading");
-		[self.delegate finishRequest:array andRestConnection:nil];
+		[delegate finishRequest:array andRestConnection:nil];
 	}	
 	
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
 {
+    [data1 release];
+	data1 = nil;
 	if(self.delegate!=nil)	
 	{
 		if([self.delegate respondsToSelector:@selector(cantConnection:andRestConnection:)])
 		{
-			[self.delegate cantConnection:error andRestConnection:nil]; 
+			[delegate cantConnection:error andRestConnection:nil]; 
 		}
 	}
 	if (connection != nil)
@@ -212,6 +235,12 @@
 		[connection release];
 		connection = nil;
 	}
+    
+    if(error.code==-1009) //No internet connected
+    {
+        SOSBEACONAppDelegate *appDelegate = (SOSBEACONAppDelegate*)[[UIApplication sharedApplication] delegate];
+        [appDelegate performSelector:@selector(beginOfflineMode)];
+    }
 }
 
 - (NSCachedURLResponse *)connection:(NSURLConnection *)connection willCacheResponse:(NSCachedURLResponse *)cachedResponse;
@@ -219,4 +248,5 @@
 	//NSLog(@"connection: willCacheResponse:");
 	return nil;
 }
+
 @end

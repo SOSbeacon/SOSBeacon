@@ -9,6 +9,7 @@
 #import "Personal.h"
 @implementation Personal
 @synthesize contactName,voidphone,email,textphone,contactID,typeContact,status;
+@synthesize groupID;
 
 - (id) init
 {
@@ -20,6 +21,7 @@
 		email = @"";
 		textphone = @"";
 		status = CONTACT_STATUS_NORMAL;
+        groupID = -1;
 	}
 	return self;
 }
@@ -42,6 +44,11 @@
 	self.contactID = object.contactID;
 	self.typeContact = object.typeContact;
 	self.status = object.status;
+    self.groupID = object.groupID;
+}
+
+- (NSString *)description {
+    return contactName;
 }
 
 @end

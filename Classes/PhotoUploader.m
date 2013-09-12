@@ -13,6 +13,12 @@
 @implementation PhotoUploader
 @synthesize endUpload;
 
+- (void)clear
+{
+    totalCount = 0;
+    sucessCount = 0;
+    failCount = 0;
+}
 - (id) init
 {
 	self = [super init];
@@ -37,12 +43,13 @@
 }
 
 - (void)uploadAll:(Uploader*)sender {
-	NSLog(@"PhotoUploader:uploadAll:0",nil);
+	//NSLog(@"PhotoUploader:uploadAll:0",nil);
 	if(array!=nil)
 	{
 		if([array count]>0)
 		{
 			upNext = YES;
+            [self clear];
 			return;
 		}
 	}
@@ -57,15 +64,16 @@
 			[array addObject:str];
 		}
 	}
-	NSLog(@"PhotoUploader:uploadAll:1",nil);
 	[self uploadPhoto];
 }
 
-- (void)uploadPhoto {
-	NSLog(@"PhotoUploader:uploadAll:0",nil);
+- (void)uploadPhoto 
+{
+
 	if([array count]>0)
 	{
-		[uploader setTitle2:[NSString stringWithFormat:@"Uploading photo : %@",[array objectAtIndex:0]]];
+   // [uploader setTitle2:[NSString stringWithFormat:@"Uploading photo : %@",[array objectAtIndex:0]]];
+    [uploader setTitle2:[NSString stringWithFormat:@"Uploading photo : %d",sucessCount+failCount +1]];
 		NSArray *key;
 		NSArray *obj;
 		if (appDelegate.uploader.isAlert==TRUE) {
@@ -83,9 +91,8 @@
 		NSDictionary *params = [NSDictionary dictionaryWithObjects:obj forKeys:key];
 		
 		NSData *theData = [NSData dataWithContentsOfFile:[PHOTO_FOLDER stringByAppendingPathComponent:[array objectAtIndex:0]]];
-		
+		//NSLog(@" image size %d",[theData length]);
 		[restConnection uploadPath:@"/data?format=json" withOptions:params withFileData:theData];	
-		NSLog(@"PhotoUploader:uploadAll:2",nil);
 	}
 	else
 	{
@@ -106,6 +113,7 @@
 				endUpload=NO;
 				uploader.isPhotoUpOK = YES;
 			}
+            [self clear];
 			[uploader finishUpload];
 		}
 	}
@@ -126,7 +134,18 @@
 - (void)finishRequest:(NSDictionary *)arrayData andRestConnection:(id)connector {
 	if([[[arrayData objectForKey:@"response"] objectForKey:@"success"] isEqualToString:@"true"])
 	{
-		NSLog(@"upload photo ok : %@",[array objectAtIndex:0]);
+        
+        sucessCount ++;
+        if (failCount >0)
+        {
+            [uploader setTitle3:[NSString stringWithFormat:@"Sucessful : %d ; Failed : %d " ,sucessCount,failCount ]];
+        }
+        else
+        {
+            [uploader setTitle3:[NSString stringWithFormat:@"Sucessful : %d " ,sucessCount ]];
+
+        }   
+	//	NSLog(@"upload photo ok : %@",[array objectAtIndex:0]);
 		[[NSFileManager defaultManager] removeItemAtPath:[PHOTO_FOLDER stringByAppendingPathComponent:[array objectAtIndex:0]] error:nil];
 		[array removeObjectAtIndex:0];
 		[self uploadPhoto];
@@ -134,10 +153,20 @@
 	else
 	{
 		
-		
+		failCount ++;
+        if (failCount >0)
+        {
+            [uploader setTitle3:[NSString stringWithFormat:@"Sucessful : %d ; Failed : %d " ,sucessCount,failCount ]];
+        }
+        else
+        {
+            [uploader setTitle3:[NSString stringWithFormat:@"Sucessful : %d " ,sucessCount ]];
+            
+        } 
 		[uploader setTitle2:[NSString stringWithFormat:@"Upload fails photo : %@",[array objectAtIndex:0]]];
 		[array removeObjectAtIndex:0];
-		[self uploadPhoto];
+		//[self uploadPhoto];
+        [self performSelector:@selector(uploadPhoto) withObject:nil afterDelay:1.5];
 	}
 }
 
@@ -146,15 +175,25 @@
 }
 
 - (void)cantConnection:(NSError*)error andRestConnection:(id)connector {
-	
+    //NSLog(@"send image error : %@",error);
+    
+	failCount= failCount + [array count];
+    [uploader setTitle3:[NSString stringWithFormat:@"Sucessful : %d ; Failed : %d " ,sucessCount,failCount ]];
 	alertView();
 	
+    if (array) {
+        [array release];
+        array = nil;
+        [self clear];
+    }
 	if(endUpload)
 	{
 		endUpload=NO;
 		uploader.isPhotoUpOK = YES;
 	}
-	[uploader finishUpload];
+    [self clear];
+    [uploader performSelector:@selector(finishUpload) withObject:nil afterDelay:1.5];
+	//[uploader finishUpload];
 	
 }
 

@@ -16,7 +16,6 @@
 	NSMutableArray *selectedEmail;
 	NSInteger flag;
 //	SOSBEACONAppDelegate *appDelegate;
-
 }
 @property (nonatomic, retain) NSMutableArray *contactList;
 @end

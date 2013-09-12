@@ -9,7 +9,6 @@
 #import "AudioRecorder.h"
 #import "SOSBEACONAppDelegate.h"
 #import "RestConnection.h"
-#import "AppSetting.h"
 #import "HomeView.h"
 #import "CaptorView.h"
 #import "StatusView.h"
@@ -34,16 +33,18 @@
 #pragma mark initAudio
 // init audio record
 - (void)initAudio {
-	NSLog(@"initAudio");
+
 	appDelegate = (SOSBEACONAppDelegate*)[[UIApplication sharedApplication] delegate];
-	
+    
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-	audioSession.delegate = self;
+   	audioSession.delegate = self;
 	[audioSession setActive:YES error: nil];
 	[audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
 	UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
 	AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute,sizeof(audioRouteOverride),&audioRouteOverride);
 	
+    //[[AVAudioSession sharedInstance] setActive:NO error:nil];
+
 	timeDisplay.text=[NSString stringWithFormat:@"00:%@",[appDelegate.settingArray objectForKey:ST_VoiceRecordDuration]];
 	sizeDisplay.text=@"0 KB";
 	
@@ -56,7 +57,7 @@
 }
 
 - (void)stopRecordAudio {
-	NSLog(@"STOP Record");
+	//NSLog(@"STOP Record");
 	isRecording = NO;
 	timeDisplay.text=@"Time: 00:00";
 	sizeDisplay.text=@"Size: 0 KB";
@@ -71,39 +72,32 @@
 }
 
 - (void)startRecordAudio {
-	NSLog(@"START Recording");
+	//NSLog(@"START Recording ------>>>");
 	isRecording = YES;
-	
 	[appDelegate playSound];
-	
-	//setting
 	NSDateFormatter *formatter;
 	NSString        *dateString;
-	
 	formatter = [[NSDateFormatter alloc] init];
 	[formatter setDateFormat:@"HH:mm:ss"];
-	
 	dateString = [formatter stringFromDate:[NSDate date]];
 	[formatter release];
 	NSMutableDictionary *recordSettings = [[NSMutableDictionary alloc] init];
-	
-	[recordSettings setValue :[NSNumber numberWithInt:kAudioFormatLinearPCM] forKey:AVFormatIDKey];
+	[recordSettings setValue:[NSNumber numberWithInt:kAudioFormatLinearPCM] forKey:AVFormatIDKey];
 	[recordSettings setValue:[NSNumber numberWithFloat:1000.0] forKey:AVSampleRateKey]; 
 	[recordSettings setValue:[NSNumber numberWithInt: 1] forKey:AVNumberOfChannelsKey];
-	
-	[recordSettings setValue :[NSNumber numberWithInt:4] forKey:AVLinearPCMBitDepthKey];
-	[recordSettings setValue :[NSNumber numberWithBool:NO] forKey:AVLinearPCMIsBigEndianKey];
-	[recordSettings setValue :[NSNumber numberWithBool:NO] forKey:AVLinearPCMIsFloatKey];
-	
+	[recordSettings setValue:[NSNumber numberWithInt:4] forKey:AVLinearPCMBitDepthKey];
+	[recordSettings setValue:[NSNumber numberWithBool:NO] forKey:AVLinearPCMIsBigEndianKey];
+	[recordSettings setValue:[NSNumber numberWithBool:NO] forKey:AVLinearPCMIsFloatKey];
 	currentFile = [NSString stringWithFormat:@"%@/Audio/sound%d_%@.caf",DOCUMENTS_FOLDER,block,dateString];
-	NSURL *fileUrl=[[[NSURL alloc] initFileURLWithPath:currentFile] autorelease];
-
+	NSURL *fileUrl=[[NSURL alloc] initFileURLWithPath:currentFile];
 	AVAudioRecorder *newRecorder =[[AVAudioRecorder alloc] initWithURL:fileUrl
 															  settings:recordSettings
 																 error:nil];
-	
-	[recordSettings release]; 	
+	[fileUrl release];
 	self.soundRecorder = newRecorder;
+    
+    [newRecorder release];
+    [recordSettings release];
 	soundRecorder.delegate = self;
 	[soundRecorder prepareToRecord];
 	[soundRecorder recordForDuration:30];
@@ -122,7 +116,12 @@
 }
 
 - (void)endRecordBlock {
-	if(appDelegate.uploader.autoUpload) [appDelegate.uploader uploadAudio]; //upload luon sau khi ghi xong
+    //NSLog(@"endRecordBlock");
+	if(appDelegate.uploader.autoUpload)
+    {
+        //NSLog(@"///   autoupload audio     ////");
+        [appDelegate.uploader uploadAudio]; //upload luon sau khi ghi xong
+    }
 	[self stopRecordAudio]; 
 	
 	block--;
@@ -136,12 +135,18 @@
 		
 		
 		[appDelegate.uploader endUploadAudio];
-		if(!appDelegate.uploader.autoUpload) [appDelegate.uploader uploadAudio];
-	}
+		if(!appDelegate.uploader.autoUpload) 
+        {
+           //NSLog(@"*************** not autoupload audio   ***************");
+            [appDelegate.uploader uploadAudio];
+        }	
+    }
 }
 
 #pragma mark Action
 - (IBAction)closeAndStop {
+    isRecording = YES;
+    //NSLog(@" closeAndStop  :isRecording:%d",isRecording);
 	if(isRecording)
 	{
 		block = -1;
@@ -158,45 +163,30 @@
 #pragma mark AVAudioRecorderDelegate
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *) aRecorder successfully:(BOOL)flag
 {
-	NSLog (@"audioRecorderDidFinishRecording successfully");
+	//NSLog (@"audioRecorderDidFinishRecording successfully");
 	[self endRecordBlock];
 }
 
 
+- (void)audioRecorderEncodeErrorDidOccur:(AVAudioRecorder *)recorder error:(NSError *)error
+{
+	//NSLog(@"audio recorder error :%@",error);
+}
+
+
 #pragma mark counttimer
+
 -(void)stopTimer{
 	[self stopRecordAudio];
 	[[AVAudioSession sharedInstance] setActive:NO error: nil];
 }
 
--(void)countTimer {
-	if(isRecording)
-	{
-		int count = 30 - soundRecorder.currentTime;
-		NSFileManager *fileManager = [NSFileManager defaultManager];
-		
-		NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:currentFile error:nil];
-		if(fileAttributes != nil)
-		{
-			NSInteger fileSize= [[fileAttributes objectForKey:NSFileSize] intValue];
-			fileSize = fileSize / 1024;
-			sizeDisplay.text=[NSString stringWithFormat:@"Size: %d KB", fileSize];
-		}
-		
-		if (count>0) {
-			if (count <10) {
-				timeDisplay.text=[NSString stringWithFormat:@"Time: 00:0%d",count];
-			}
-			else{
-				timeDisplay.text=[NSString stringWithFormat:@"Time: 00:%d",count];
-			}
-		}
-		
-	}
+-(void)countTimer 
+{
 }
 
 - (void)dealloc {
-	NSLog(@"DEALLOC AudioRecorder");
+	//NSLog(@"DEALLOC AudioRecorder");
 	[countDown invalidate];
 	[timeDisplay release];
 	[sizeDisplay release];
@@ -204,4 +194,5 @@
 	[soundRecorder release];
     [super dealloc];
 }
+
 @end

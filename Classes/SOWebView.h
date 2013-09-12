@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SOSBEACONAppDelegate.h";
+#import "SOSBEACONAppDelegate.h"
 
 @interface SOWebView : UIViewController <UIWebViewDelegate>{
 	UIWebView *loadWeb;
@@ -15,6 +15,5 @@
 	IBOutlet UIActivityIndicatorView *actWeb;
 }
 @property (nonatomic, retain) IBOutlet UIWebView *loadWeb;
-@property (nonatomic, retain) SOSBEACONAppDelegate *appDelegate;
 - (IBAction) backHome;
 @end

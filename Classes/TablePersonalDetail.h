@@ -37,10 +37,11 @@ ABPeoplePickerNavigationControllerDelegate,RestConnectionDelegate,UIAlertViewDel
 	NSString *groupName;
 	UIActivityIndicatorView *actContact;
 	UIBarButtonItem *saveButton;
+    
 	BOOL isEdited;
-	
 	BOOL isAddContact;
-
+    BOOL readOnly;
+    BOOL otherGroup;
 }
 
 @property (nonatomic, retain) RestConnection *restConnection;
@@ -53,8 +54,8 @@ ABPeoplePickerNavigationControllerDelegate,RestConnectionDelegate,UIAlertViewDel
 @property (nonatomic) NSInteger personalIndex;
 @property (nonatomic) NSInteger groupID;
 @property (nonatomic, retain) NSString *groupName;
-
-
+@property (nonatomic) BOOL readOnly;
+@property (nonatomic) BOOL otherGroup;
 
 - (IBAction)cancel:(id)sender;
 - (IBAction)save:(id)sender;

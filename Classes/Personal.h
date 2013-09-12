@@ -23,6 +23,7 @@
 	NSString *textphone;	
 	BOOL typeContact; // 1 - Default contact; 0 - Manual Contact
 	NSInteger status;
+    NSInteger groupID;
 }
 @property (nonatomic) BOOL typeContact;
 @property (nonatomic) NSInteger contactID;
@@ -31,6 +32,7 @@
 @property (nonatomic,copy) NSString *voidphone;
 @property (nonatomic,copy) NSString *textphone;
 @property (nonatomic) NSInteger status;
+@property (nonatomic) NSInteger groupID;
 
 -(void)copyObject:(Personal*)object;
 

@@ -48,16 +48,16 @@
 #pragma mark -
 #pragma mark Other
 - (void)uploadPhoto {
-	NSLog(@"Uploader:uploadPhoto",nil);
+	//NSLog(@"Uploader:uploadPhoto",nil);
 	if(autoUpload) 
 	{
-		NSLog(@"Uploader:uploadPhoto:autoUpload:0",nil);
+		//NSLog(@"Uploader:uploadPhoto:autoUpload:0",nil);
 		[photoUploader uploadAll:self];
-		NSLog(@"Uploader:uploadPhoto:autoUpload:1",nil);
+		//NSLog(@"Uploader:uploadPhoto:autoUpload:1",nil);
 	}
 	else 
 	{
-		NSLog(@"Uploader:uploadPhoto:a!utoUpload",nil);
+		//NSLog(@"Uploader:uploadPhoto:a!utoUpload",nil);
 		isPhotoUpOK=YES;
 		[self setTitle2:@"Photo process complete"];
 		[photoUploader uploadAll:self];
@@ -66,13 +66,17 @@
 
 }
 
+
 - (void)uploadAudio {
+	
 	if(autoUpload) 
 	{
+        NSLog(@"upload audio-->uploadAll");
 		[audioUploader uploadAll:self];
 	}
 	else 
 	{
+        NSLog(@"upload audio--->finishWait");
 		isAudioUpOK = YES;
 		[self setTitle1:@"Audio record complete"];
 		[audioUploader uploadAll:self];
@@ -84,7 +88,7 @@
 
 - (void)finishUpload 
 {
-	NSLog(@"UPload status : %d - %d",isAudioUpOK,isPhotoUpOK);
+	//NSLog(@"UPload status : %d - %d",isAudioUpOK,isPhotoUpOK);
 	if(isAudioUpOK&&isPhotoUpOK)
 	{
 		isAudioUpOK = NO;
@@ -98,14 +102,13 @@
 		{
 			//send alert
 			[captorView dismissModalViewControllerAnimated:YES];
+            
 		}
 		else {
 			//send checkin
-			
 			if(delegate!=nil && [delegate respondsToSelector:@selector(uploadFinish)])
 			{
 				[delegate uploadFinish];
-				NSLog(@"up load finish******-*-*-*-*-*-*-*---*");
 			}
 			
 		}
@@ -121,7 +124,19 @@
 			[alert show];
 			[alert release];
 		}
-
+        if (appDelegate.flagsentalert ==2) 
+		{
+			appDelegate.flagsentalert =10;
+			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success"
+                                                            message:NSLocalizedString(@"chekin_success",@"")
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"Ok"
+                                                  otherButtonTitles:nil];
+            [alert show];
+            [alert release];
+		}
+        
+        
 	}
 }
 
@@ -131,9 +146,10 @@
 		isPhotoUpOK = NO;
 		photoUploader.endUpload = NO;
 		audioUploader.endUpload = NO;
-		[captorView dismissModalViewControllerAnimated:YES];
+	[captorView dismissModalViewControllerAnimated:YES];
 	}
 }
+
 
 - (void)setCaptorView:(CaptorView*)object {
 	captorView = object;
@@ -146,7 +162,10 @@
 - (void)setTitle2:(NSString*)title {
 	if(captorView) captorView.label2.text = title;
 }
-
+- (void)setTitle3:(NSString*)title 
+{
+	if(captorView) captorView.label4.text = title;
+}
 - (void)endUploadPhoto {
 	photoUploader.endUpload = YES;
 }
@@ -165,10 +184,7 @@
 #pragma mark Alert
 //message
 - (void)sendAlert {
-	
-	//
-	/*
-	if (appDelegate.longitudeString == NULL)
+		if (appDelegate.longitudeString == NULL)
 	{
 		appDelegate.longitudeString = @"0";
 	}
@@ -176,8 +192,6 @@
 	{
 		appDelegate.latitudeString = @"0";
 	}
-	*/
-	//
 //[appDelegate.statusView showStatus:@"Sending alert to server..."];
 	
 	NSArray *key = [NSArray arrayWithObjects:@"phoneId",@"token",@"latitude",@"longtitude",@"type",nil];
@@ -187,15 +201,12 @@
 	[restConnection postPath:[NSString stringWithFormat:@"/alert?format=json"] withOptions:param];
 }
 - (void)sendImOkAlert {
-	
+	NSLog(@"sendImOkAlert");
 	//[appDelegate.statusView showStatus:@"Sending alert to server..."];
+	/*
 	flag =1;
 	NSArray *key = [NSArray arrayWithObjects:@"phoneId",@"token",@"latitude",@"longtitude",@"type",@"message",nil];
-	
-	//NSLog(@"%d",a)
-	/*
-	 NSLog(@"phoneid: %d   toke :%@    latitude:%@      longtitude:%@   ",appDelegate.phoneID,appDelegate.apiKey,appDelegate.latitudeString,appDelegate.longitudeString);	
-	 
+		 
 	 if (appDelegate.longitudeString == NULL)
 	 {
 	 appDelegate.longitudeString = @"0";
@@ -204,14 +215,29 @@
 	 {
 	 appDelegate.latitudeString = @"0";
 	 }
-	*/ 
-	////////////////////////////////
-	
-	
+	 	
 	NSArray *obj = [NSArray arrayWithObjects:[NSString stringWithFormat:@"%d",appDelegate.phoneID],
 					appDelegate.apiKey,appDelegate.latitudeString,appDelegate.longitudeString,@"2",@"i'm ok",nil];
 	NSDictionary *param =[NSDictionary dictionaryWithObjects:obj forKeys:key];
 	[restConnection postPath:[NSString stringWithFormat:@"/alert?format=json"] withOptions:param];
+	 */
+	
+	
+	///
+	flag = 1;
+	NSString *defaultFile = [DOCUMENTS_FOLDER stringByAppendingPathComponent:@"defaultGroup.plist"];
+	NSMutableArray *arrdata = [[NSMutableArray alloc] initWithContentsOfFile:defaultFile];
+	
+	NSArray *key = [NSArray arrayWithObjects:@"token",@"phoneId",@"type",@"toGroup",@"singleContact",@"message",nil];
+	NSArray *obj = [NSArray arrayWithObjects:appDelegate.apiKey,[NSString stringWithFormat:@"%d",appDelegate.phoneID],@"2",
+					[appDelegate.settingArray objectForKey:CK_CheckingIn],[arrdata objectAtIndex:0],
+					@"I'm ok",nil];
+	NSDictionary *param =[NSDictionary dictionaryWithObjects:obj forKeys:key];
+	[restConnection postPath:[NSString stringWithFormat:@"/alert?latitude=%@&longtitude=%@&format=json",appDelegate.latitudeString,appDelegate.longitudeString] withOptions:param];
+	//
+
+
+	
 }
 
 #pragma mark -
@@ -245,7 +271,7 @@
 			[delegate requestUploadIdFinish:-1];
 		}
 	}
-	NSLog(@"----------->>>>>>>>>>");
+	//NSLog(@"----------->>>>>>>>>>");
 	[appDelegate.statusView performSelector:@selector(hideStatus) withObject:nil afterDelay:0.7];
 	//[appDelegate.statusView hideStatus];
 	

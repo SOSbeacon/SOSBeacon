@@ -176,7 +176,7 @@
 		// create an authorization URL for the request token
 		NSURL *authorizationUrl = [tokenAuthRequest authUrlForRequestToken:requestToken];
 		
-		NSLog(@"authorizationUrl: %@",[authorizationUrl absoluteString]);
+		//NSLog(@"authorizationUrl: %@",[authorizationUrl absoluteString]);
 		
 #if (TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR)
 		// open safari with the auth url.

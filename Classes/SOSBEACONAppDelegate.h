@@ -13,7 +13,7 @@
 //@"http://www.sosbeacon.com"
 
 //#define SERVER_URL @"http://www.sosbeacon.com"
-#define SERVER_URL @"http://sosbeacon.org:8085"
+#define SERVER_URL @"http://sosbeacon.org"
 #define DOCUMENTS_FOLDER [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] //Define folder save information user
 
 #define CONF_DIALOG_DELAY_TIME 1 //define delay UIAlertView
@@ -22,30 +22,29 @@
 #import <CoreLocation/CoreLocation.h>
 #import "SplashView.h"
 #import "YOSSession.h"
+#import "Reachability.h"
 //#import "NewLogin.h"
-@class LoginView;
+//#import "TermsService.h"
 @class HomeView;
 @class SOWebView;
 @class NewLogin;
-@class Register;
 @class StatusView;
 @class Uploader;
 @class AVAudioPlayer;
 @class GroupsView;
-@class WaitActive;
-
+@class TermsService;
 @class AddContactViewController;
+@class OfflineViewController;
+
+@class RestConnection;
 
 @interface SOSBEACONAppDelegate : NSObject<UIApplicationDelegate,CLLocationManagerDelegate,UITabBarControllerDelegate> {
 	
 	UIWindow *window;
 	SplashView *splashView;
-	WaitActive *waitActiveView;
-	LoginView *loginView;
 	HomeView *viewHome;
 	SOWebView *webView;
 	GroupsView *groupView;
-	Register *reg;
 	IBOutlet UINavigationController *homNavigationController;
 	
 	StatusView *statusView;
@@ -90,7 +89,20 @@
 	NSInteger respondcode;
 	BOOL canShowVideo;
 	NewLogin *newlogin;
+	TermsService *termsService; 
+	
+	//Reachability* hostReach;
+    Reachability* internetReach;
+	NSTimer *countDownTimer;
+	BOOL isOfflinemode;
+	NSInteger flagOffline;
+	OfflineViewController *offlineview;
+	NSInteger countOffline;
+	BOOL isShowAlert;
+    
+    RestConnection *restForCheckInternet;
 }
+//@property (nonatomic, retain)  Reachability* internetReach;
 @property(nonatomic,retain) NewLogin *newlogin;
 @property(nonatomic) BOOL canShowVideo;
 @property(nonatomic) NSInteger respondcode;
@@ -105,7 +117,7 @@
 @property (nonatomic, retain) IBOutlet UITabBarController *tabBarController;
 @property (nonatomic, retain) IBOutlet StatusView *statusView;
 
-@property (nonatomic, retain) HomeView *viewHome;
+@property (nonatomic, retain) IBOutlet HomeView *viewHome;
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) SOWebView *webView;
 @property (nonatomic, retain) IBOutlet GroupsView *groupView;
@@ -124,9 +136,6 @@
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 @property (nonatomic, retain) UIAlertView *alertLocation;
-@property (nonatomic, retain) LoginView *loginView;
-@property (nonatomic, retain) Register *reg;
-@property (nonatomic, retain)WaitActive *waitActiveView;
 
 @property (nonatomic, retain) Uploader *uploader;
 @property (nonatomic) BOOL logout;
@@ -140,14 +149,20 @@
 @property (nonatomic, retain) NSMutableArray *emailList;
 @property (nonatomic, retain) AddContactViewController *addContactViewController;
 
+- (void)showSplash;
 - (void)playSound;
 - (void)playSound3;
-- (void) hiddenSplash;
+- (void)hiddenSplash;
 - (void)showVideo;
 - (void)getUserProfile;
 - (void)createYahooSession;
 - (void)handlePostLaunch;
 - (void)abc:(NSString *)str;
 - (void)handlePostLaunch;
+- (void)showOfflineMode;
+- (void)newCheckInternetConnection;
+- (void)recieveConnectionResult;
+- (void)showLoading;
+
 @end
 

@@ -62,6 +62,8 @@
 	[self loadData];
 	txtPhoneNumber.enabled = NO;
     [super viewDidLoad];
+    
+    //NSLog(@" pass : %@",txtPassword.text);
 }
 
 
@@ -88,6 +90,7 @@
 
 
 - (void)dealloc {
+	rest.delegate = nil;
 	[rest release];
 	[btnSave release];
 	[actSetting release];
@@ -107,15 +110,16 @@
 	
 	if([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/info.plist",DOCUMENTS_FOLDER]])
 	{
-
+        NSLog(@"read file");
 		NSString *password =[[NSString alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@/info.plist",DOCUMENTS_FOLDER]];
+       // NSString *password =[[NSString alloc ]initWithContentsOfFile:[NSString stringWithFormat:@"%@/info.plist",DOCUMENTS_FOLDER] encoding:[NSString defaultCStringEncoding] error:nil];
 		if ([password isEqualToString:@"1" ]) 
 		{
 			txtPassword.text=@"";
 		}
 		else 
 		{
-			NSLog(@" password :%@",password);
+			//NSLog(@" password :%@",password);
 			txtPassword.text = password;
 		}
 
@@ -134,7 +138,7 @@
 		 NSMutableArray *acc = [accArray  objectForKey:strPhoneNumber];
 		 if (acc == nil) 
 		 {
-			 NSLog(@"do no thing");
+			// NSLog(@"do no thing");
 			
 		 }
 			else
@@ -288,17 +292,17 @@
 	
 */	
 }
+
 - (void) DimisAlertView:(UIAlertView*)alertView {
 	[alertView dismissWithClickedButtonIndex:0 animated:TRUE];
 }
-#pragma mark IBAction 
 
+#pragma mark IBAction 
 - (IBAction)textFieldDoneEditing:(id)sender {
 	[sender resignFirstResponder];	
 }
 
 - (IBAction)backgroundTap:(id)sender {
-
 	[txtEmail resignFirstResponder];
 	[txtPassword resignFirstResponder];
 	[txtPhoneNumber resignFirstResponder];
@@ -313,7 +317,7 @@
 	actSetting.hidden = YES;
 	btnSave.enabled = TRUE;
 	isEdit = NO;
-	NSLog(@" setting account array data-->>: %@ ",arrayData);
+	//NSLog(@" setting account array data-->>: %@ ",arrayData);
 	NSInteger responsecode = [[[arrayData objectForKey:@"response"] objectForKey:@"responseCode"] intValue];
 		if (responsecode == 1)
 		{
@@ -329,7 +333,10 @@
 			{
 	
 			NSString *pass = txtPassword.text;
+				//NSLog(@" write to file");
+
 			[pass writeToFile:[NSString stringWithFormat:@"%@/info.plist",DOCUMENTS_FOLDER] atomically:YES];
+			//	[pass writeToFile:[NSString stringWithFormat:@"%@/info.plist",DOCUMENTS_FOLDER] atomically:YES encoding:NSUnicodeStringEncoding error:nil];	
 			
 			///////
 			if ([[NSFileManager defaultManager]  fileExistsAtPath:[NSString stringWithFormat:@"%@/allAccount.plist",DOCUMENTS_FOLDER] ]) 
@@ -341,7 +348,7 @@
 				NSMutableArray *acc = [accArray  objectForKey:strPhoneNumber];
 				if (acc == nil) 
 				{
-					NSLog(@"do no thing");
+					//NSLog(@"do no thing");
 					
 				}
 				else
@@ -357,7 +364,7 @@
 			}
 			
 			///////
-			NSLog(@" passs word after save: %@",pass);
+		//	NSLog(@" passs word after save: %@",pass);
 			}
 			btnSave.enabled = TRUE;
 			
@@ -396,16 +403,8 @@
 	[txtuserName resignFirstResponder];
 }
 
-	
-	
-
-	
-	
-
-
 #pragma mark -
 #pragma mark -network fail
-
 -(void)cantConnection:(NSError *)error andRestConnection:(id)connector{
 	btnSave.enabled = TRUE;
 	[actSetting stopAnimating];
@@ -415,7 +414,5 @@
 		save = NO;
 	}
 }
-
-
 
 @end

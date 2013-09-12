@@ -126,14 +126,14 @@ static const int animationFramesPerSec = 8;
 	
 	// The view is retained by the superclass, so release our copy
 	[view1 release];
-	[labelFont release];
+	//[labelFont release];
 	//[label release];
 }
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-	NSLog(@"=======$$$$$ memory error! slide");
+	//NSLog(@"=======$$$$$ memory error! slide");
 	// Release any cached data, images, etc that aren't in use.
 }
 
@@ -304,7 +304,7 @@ static const int animationFramesPerSec = 8;
 }
 
 - (void)dealloc {
-	NSLog(@"DEALLOC Slider");
+	//NSLog(@"DEALLOC Slider");
 	[thumbImage release];
 	[trackImage release];
 	[sliderBackground release];

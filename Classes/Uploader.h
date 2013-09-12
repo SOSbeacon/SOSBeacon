@@ -10,7 +10,6 @@
 #import "PhotoUploader.h"
 #import "AudioUploader.h"
 #import "SOSBEACONAppDelegate.h"
-#import "AppSetting.h"
 
 @class CaptorView;
 
@@ -23,7 +22,6 @@
 @interface Uploader : NSObject <RestConnectionDelegate> {
 	SOSBEACONAppDelegate *appDelegate;
 	id <UploaderDelegate> delegate;
-	AppSetting *appSetting;
 	BOOL isAudioUpOK;
 	BOOL isPhotoUpOK;
 	
@@ -56,6 +54,7 @@
 - (void)uploadAudio;
 - (void)setTitle1:(NSString*)title;
 - (void)setTitle2:(NSString*)title;
+- (void)setTitle3:(NSString*)title;
 - (void)finishUpload;
 - (void)finishWait;
 - (void)sendAlert;

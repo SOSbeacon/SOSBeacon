@@ -13,9 +13,14 @@
 	NSString *idGroup;
 	NSString *phone_id;
 	NSString *nameGroup;
-	
+    BOOL    allowEditName;
+    BOOL    allowDelete;
 }
+
 @property (nonatomic, retain) NSString *nameGroup;
 @property (nonatomic, retain) NSString *idGroup;
 @property (nonatomic, retain) NSString *phone_id;
+@property (nonatomic, assign, getter = isAllowEditName) BOOL allowEditName;
+@property (nonatomic, assign, getter = isAllowDelete) BOOL allowDelete;
+
 @end

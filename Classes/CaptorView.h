@@ -32,6 +32,7 @@
 	UILabel *label1;
 	UILabel *label2;
 	UILabel *label3;
+    UILabel *label4;
 	IBOutlet UIToolbar *toolBarForCamera;
 	BOOL isCheckIn;
 	
@@ -41,19 +42,16 @@
 	
 	NSOperationQueue *mainOpQueue;
 	IBOutlet UILabel *countLabel;
-	UIBarButtonItem *capturePhotoButton;
-	//IBOutlet UIButton *doneButton;
 	 UIButton *captureButton;
 	BOOL isauto;
-	//UIBarButtonItem *stop;
 	IBOutlet UILabel *uploading;
+    NSInteger imageOritation;
+    NSInteger imageCount;
 
 	
 }
-//@property(nonatomic, retain) IBOutlet UIBarButtonItem *stop;
 @property(nonatomic)  BOOL isauto;
 @property(nonatomic, retain) IBOutlet UIButton *captureButton;
-@property(nonatomic ,retain) IBOutlet UIBarButtonItem *capturePhotoButton;
 @property(nonatomic,retain)UILabel *countLabel;
 @property(nonatomic,retain) IBOutlet UIActivityIndicatorView *busy;
 @property(nonatomic,retain) IBOutlet UILabel *lnlTopMessage;
@@ -63,14 +61,17 @@
 @property (nonatomic,retain) IBOutlet UILabel *label1;
 @property (nonatomic,retain) IBOutlet UILabel *label2;
 @property (nonatomic,retain) IBOutlet UILabel *label3;
+@property (nonatomic,retain) IBOutlet UILabel *label4;
 @property (nonatomic,retain) IBOutlet UIView *vwToolbarHolder;
 @property (nonatomic,assign)BOOL isCheckIn;
-- (IBAction)takePicture;
+- (IBAction)newCamera;
 - (IBAction)back;
 - (IBAction)stopCaptor:(UIBarButtonItem*)sender;
 - (IBAction)stopCaptorOnCamera:(id)sender;
 - (IBAction)btnCameraTapped:(id)sender ;
 - (void)newCaptor;
 - (void)newCheckin;
--(void)updateCountDown;
+- (void)updateCountDown;
+//- (void)playaudio;
+- (void)enableCameraButton;
 @end

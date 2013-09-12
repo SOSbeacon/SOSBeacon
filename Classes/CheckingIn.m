@@ -25,60 +25,27 @@
 @synthesize typeArray;
 @synthesize actionSheet1;
 
-/*
--(void)checkTextLen
-{
-	NSLog(@"check length: length = %d",[tvTextMessage.text length]);
-//	NSLog(@" test : %d",[test.text length]);
-	if ([tvTextMessage.text length] ==121)
-	{
-		NSString *message = tvTextMessage.text;
-		tvTextMessage.text= [ message substringToIndex:119];
-
-		
-		UIAlertView *alert =[[UIAlertView alloc] initWithTitle:nil 
-													   message:@"message length exceeds sms limit"
-													  delegate:nil
-											 cancelButtonTitle:@"OK"
-											 otherButtonTitles:nil];
-		[alert show];
-		[alert release];
-		//[self di]
-	}
-
-	
-}
- */
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	appDelegate.uploader.delegate = self;
 	
-	//if ([[appDelegate.settingArray objectForKey:CK_CheckingIn] intValue] == 0)
-	if (newFlag == 1) 
-	{
-		
-	}
-	else {
-		
-
-		lblContact.text = @"Family";
+	//lblContact.text = @"Family";
 	tvTextMessage.hidden = YES;
-	tvTextMessage.text = @"I'm ok";
-	}
-	
-
+	//tvTextMessage.text = @"I'm ok";
+	labelCountMessage.hidden = YES;
 
 }
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
+	tvTextMessage.text = @"I'm ok";
+	appDelegate = (SOSBEACONAppDelegate*)[[UIApplication sharedApplication] delegate];
+//	[appDelegate showOfflineMode];
 	
-	//
 	
-	//
-	 
-	//custom check
+	
+	
 	[btnCheck setTitle:@"Check in Now" forState:UIControlStateNormal];
 	//[[btnCheck titleLabel] setTextColor:[UIColor blackColor]];
 	[[btnCheck titleLabel] setTextAlignment:UITextAlignmentCenter];
@@ -86,24 +53,18 @@
 	[[btnCheck titleLabel] setNumberOfLines:0];
 	[[btnCheck titleLabel] setFont:[UIFont boldSystemFontOfSize:20.0f]];
 	
-	appDelegate = (SOSBEACONAppDelegate*)[[UIApplication sharedApplication] delegate];
-		
 	restConnection = [[RestConnection alloc] initWithBaseURL:SERVER_URL];
 	restConnection.delegate = self;
-	scrollView.contentSize = CGSizeMake(320, 480);
+	scrollView.contentSize = CGSizeMake(320, 460);
 	tvTextMessage.delegate = self;
-	
+	/*
 	if (!slideCheckin) {
-		// Create the slider
 		slideCheckin = [[SlideToCancelViewController alloc] init];
 		slideCheckin.delegate = self;
-	//	slideCheckin.label.font =[UIFont systemFontOfSize:14.0];
 		slideCheckin.labelText = @"  Send audio/image recording";
-		// Position the slider off the bottom of the view, so we can slide it up
 		CGRect sliderFrame = slideCheckin.view.frame;
 		sliderFrame.origin.y = self.view.frame.size.height;
 		slideCheckin.view.frame = sliderFrame;
-		// Add slider to the view
 		[self.view addSubview:slideCheckin.view];
 	}
 	slideCheckin.enabled=YES;
@@ -111,14 +72,13 @@
 	sliderCenter.y -= slideCheckin.view.bounds.size.height+125;
 	slideCheckin.view.center = sliderCenter;
 	[UIView commitAnimations];
-	////*******
+	 */
+	
 	NSString *fileCount=[DOCUMENTS_FOLDER stringByAppendingPathComponent:@"count.plist"];
-	// array save message template
 	NSString *file=[DOCUMENTS_FOLDER stringByAppendingPathComponent:@"message.plist"];
 	if ([[NSFileManager defaultManager] fileExistsAtPath:file]) 
 	{
 	
-		NSLog(@"co ton tai file message.plist");
 		arrayCheckin = [[NSMutableArray alloc] initWithContentsOfFile:file];
 		countArray = [[NSMutableArray alloc] initWithContentsOfFile:fileCount];
 	}
@@ -137,9 +97,7 @@
 						@"Weather Alert ",
 						@"Security Problem",
 						@"Enter your message",nil];		
-		//arrayCheckin = [[NSMutableArray alloc] initWithObjects:@"I'm ok",@"Enter your message",nil];
 		[arrayCheckin writeToFile:file atomically:YES];
-		NSLog(@"khong ton tai file");
 		[[NSFileManager defaultManager] createFileAtPath:fileCount contents:nil attributes:nil];
 		countArray = [[NSMutableArray alloc] initWithObjects:@"0",@"0",@"0",@"0",@"0",@"0",@"0",@"0",@"0",@"0",@"0",nil];
 		[countArray writeToFile:fileCount atomically:YES];
@@ -148,36 +106,54 @@
 	tableViewCheckIn = [[UITableView alloc] initWithFrame:CGRectMake(10, 15, 280, 320) style:UITableViewStyleGrouped];
 	tableViewCheckIn.delegate = self;
 	tableViewCheckIn.dataSource = self;	
-	
-	///
 	flag = 2;
 	[restConnection getPath:[NSString stringWithFormat:@"/groups?phoneId=%d&token=%@&format=json",appDelegate.phoneID,appDelegate.apiKey] withOptions:nil];
-	NSLog(@"get contact view did load");	
-	///
-	//countDownTimer=[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(checkTextLen) userInfo:nil repeats:YES];
-
+	
+	[self saveLastGroup];
 }
 //function catch slide event
 - (void) cancelled:(SlideToCancelViewController*)sender {
+    //NSLog(@"show captorview Check_in");
 	if(sender == slideCheckin){
 		appDelegate.uploader.autoUpload = YES;
 		CaptorView *captor = [[CaptorView alloc] init] ;
 		captor.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
 		captor.isCheckIn=TRUE;
 		[self presentModalViewController:captor animated:YES];
-		
+		[captor autorelease];
 		slideCheckin.enabled = YES;
-		NSLog(@"slide");
+		/*
 		if (tvTextMessage.hidden) 
 		{
-			NSLog(@"khong lam j");
 		}
 		else 
 		{
 			newFlag = 1;
 		}
+		 */
 
 	}	
+}
+-(void)sendAudioImage
+{
+    //NSLog(@"show captorview Check_in");
+	appDelegate.uploader.autoUpload = YES;
+	CaptorView *captor = [[CaptorView alloc] init] ;
+	captor.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+	captor.isCheckIn=TRUE;
+	[self presentModalViewController:captor animated:YES];
+    
+    [captor autorelease];
+	slideCheckin.enabled = YES;
+	/*
+	if (tvTextMessage.hidden) 
+	{
+	}
+	else 
+	{
+		newFlag = 1;
+	}
+	*/
 }
 
 - (void)didReceiveMemoryWarning {
@@ -194,6 +170,12 @@
 }
 
 - (void)dealloc {
+	[labelCountMessage release];
+    if (familyGroupId)
+    {
+        [familyGroupId release];
+    }
+	[countArray release];
 	[groupArray release];
 	[typeArray release];
 	[actionSheet1 release];
@@ -209,12 +191,49 @@
 	[lblContact release];
     [super dealloc];
 }
+-(void)checkingInNow
+{
+	btnGetcontact.enabled = FALSE;
+	btnGetMessage.enabled = FALSE;
+	btnCheck.enabled = FALSE;
+	btnCancel.enabled = FALSE;
+	tvTextMessage.userInteractionEnabled = FALSE;	
+	
+	if ([[tvTextMessage.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] isEqualToString:@""]) {
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+														message:NSLocalizedString(@"checkinWithOutMessage",@"")
+													   delegate:nil
+											  cancelButtonTitle:@"Ok"
+											  otherButtonTitles:nil];
+		[alert show];
+		[self performSelector:@selector(dimisAlert:) withObject:alert afterDelay:2];
+		[alert release];
+		btnCheck.enabled = TRUE;
+		btnCancel.enabled = TRUE;
+		btnGetMessage.enabled = TRUE;
+		btnGetcontact.enabled = TRUE;
+		tvTextMessage.userInteractionEnabled = TRUE;
+		return;
+		
+	}
+	else {
+		lblGetMessage.text = tvTextMessage.text;
+		[self sendCheckin];
+	}
+	
+	actChecking.hidden = NO;
+	[actChecking startAnimating];
+	
+	
+}
 
 #pragma mark textviewdelegate
 
 - (void)textViewDidChange:(UITextView *)textView{
-	if (textView.text.length >=95) {
-		textView.text = [tvTextMessage.text substringToIndex:95];
+	
+	if (textView.text.length >=75) {
+		textView.text = [tvTextMessage.text substringToIndex:75];
+		/*
 		UIAlertView *alert =[[UIAlertView alloc] initWithTitle:nil 
 													   message:NSLocalizedString(@"messageLimit",@"")
 													  delegate:nil
@@ -222,33 +241,22 @@
 											 otherButtonTitles:nil];
 		[alert show];
 		[alert release];
+		 */
 	}
+	labelCountMessage.text = [NSString stringWithFormat:@"(there are %d characters remaining)",(75 - [textView.text length])];
+
 }
 
 #pragma mark Actionsheet
 //get contact to send checkin
 - (IBAction)GetContact {
 	editIndex = 1;
-	/*
-	UIActionSheet *actionSheet1 = [[UIActionSheet alloc] initWithTitle:@""
-															  delegate:self 
-													 cancelButtonTitle:nil
-												destructiveButtonTitle:nil 
-													 otherButtonTitles:@"Family",@"Friends",
-	 @"Neighborhood Watch",@"Group A",@"Group B",@"All Groups",@"Single Contact",nil];
-	 */
 	actionSheet1.actionSheetStyle = UIActionSheetStyleBlackOpaque;
 	[actionSheet1 showInView:appDelegate.window];
 	//[actionSheet1 release];
 }	
 //get mesage checkin
 - (IBAction)getMessageCheckIn {
-	/*
-	tableViewCheckIn = [[UITableView alloc] initWithFrame:CGRectMake(10, 15, 280, 320) style:UITableViewStyleGrouped];
-		tableViewCheckIn.delegate = self;
-	tableViewCheckIn.dataSource = self;
-	 */
-//	tableViewCheckIn.backgroundColor = [UIColor clearColor];
 	messageBackground = [[UIView alloc] initWithFrame:CGRectMake(10, 50, 300, 360)];
 	messageBackground.backgroundColor = [UIColor blackColor];
 	[messageBackground.layer setCornerRadius:15];
@@ -267,18 +275,15 @@
 	{
 		tvTextMessage.hidden = NO;
 		tvTextMessage.text = @"";
-		//countDownTimer=[NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(checkTextLen) userInfo:nil repeats:YES];
-
+		labelCountMessage.hidden = NO;
 	}else 
 	{
-		//NSLog(@" array count : %@",countArray);
 		tvTextMessage.hidden = YES;
+		labelCountMessage.hidden = YES;
 		NSInteger i = [[countArray objectAtIndex:[indexPath row]]intValue];
 		i++;
 		NSString *count =[[NSString alloc] initWithFormat:@"%d",i];
 		[countArray  replaceObjectAtIndex:[indexPath row] withObject:count];
-		NSLog(@" array count : %@",countArray);
-		
 		NSString *fileCount=[DOCUMENTS_FOLDER stringByAppendingPathComponent:@"count.plist"];
 		[countArray writeToFile:fileCount atomically:YES];
 		[count release];
@@ -292,7 +297,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    // Return the number of rows in the section.
 	return [arrayCheckin count];
 }	
 
@@ -316,7 +320,6 @@
 		if ([message isEqual:@"Enter your message" ])
 	{
 		cell.textLabel.textColor =[UIColor colorWithRed:1.0/255 green:220.0/255 blue:100.0/255 alpha:1.0]	;
-		//@"Problems Resolved"
 	}
 	else 
 	if (([message isEqual:@"I'm ok" ]) ||([message isEqual:@"I will be late" ]) ||([message isEqual:@"I will call later" ]) ||([message isEqual:@"Please call me asap" ] )||([message isEqual:@"Problems Resolved" ]) )
@@ -327,15 +330,6 @@
 	{
 		cell.textLabel.textColor =[UIColor colorWithRed:1.0/255 green:100.0/255 blue:100.0/255 alpha:1.0]	;
 	}
-/*
- @"I'm ok",
- @"I will be late",
- @"I will call later",
- @"Please call me asap",
- 
- */
-
-	
 	return cell;
 	
 }
@@ -345,11 +339,10 @@
 
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
 	if (buttonIndex != [actionSheet cancelButtonIndex]) {
+		NSLog(@"%d",buttonIndex);
 		NSString *value;
 		if(editIndex==1)
 		{
-			NSLog(@" button index : %d",buttonIndex);
-			NSLog(@" group count : %d",[groupArray count]);
 			if (buttonIndex == ([groupArray count] )) 
 			{
 				lblContact.text =	@"All Groups";
@@ -362,7 +355,7 @@
 			{
 				[appDelegate.settingArray setObject:@"-1" forKey:CK_CheckingIn];
 				picker = [[ABPeoplePickerNavigationController alloc] init];
-				NSLog(@"pickr alloc + init");
+			//	NSLog(@"pickr alloc + init");
 				picker.peoplePickerDelegate = self;
 				[self presentModalViewController:picker animated:YES];
 				[picker release];
@@ -373,56 +366,14 @@
 			{
 					
 			NSInteger i = buttonIndex ;
-				NSLog(@" i = %d",i);
 			lblContact.text = [groupArray objectAtIndex:i];
-				if (i < [groupArray  count])
+			if (i < [groupArray  count])
 				{
 					[appDelegate.settingArray setObject:[typeArray objectAtIndex:i] forKey:CK_CheckingIn];
 
 				}
-							}
-			NSLog(@"  setting array :%@:",[appDelegate.settingArray objectForKey:CK_CheckingIn])	;	
-
-			/*
-			switch (buttonIndex) {
-				case 0:
-					value=@"0";
-					lblContact.text=@"Family";
-					break;
-				case 1:
-					value=@"1";
-					lblContact.text=@"Friends";
-					break;
-				case 2:
-					value=@"2";
-					lblContact.text=@"Neighborhood Watch";
-					break;
-				case 3:
-					value=@"3";
-					lblContact.text=@"Group A";
-					break;
-				case 4:
-					value=@"4";
-					lblContact.text=@"Group B";
-					break;
-				case 5:
-					value=@"5";
-					lblContact.text=@"All Groups";
-					break;
-				case 6:
-					value = @"6";
-					picker = [[ABPeoplePickerNavigationController alloc] init];
-					picker.peoplePickerDelegate = self;
-					[self presentModalViewController:picker animated:YES];
-					[picker release];
-					break;
-				default:
-					value=@"0";
-					break;
 			}
-			[appDelegate.settingArray setObject:value forKey:CK_CheckingIn];
-			 */
-		}
+				}
 			
 	}
 }
@@ -430,6 +381,22 @@
 #pragma mark  dismisAlertview
 - (void) dimisAlert:(UIAlertView *)alertView {
 	[alertView dismissWithClickedButtonIndex:0 animated:TRUE];
+}
+#pragma mark alertView delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+	if (buttonIndex == 0)
+	{
+		isSendWithAudio = YES;
+        appDelegate.uploader.isSendAlert = YES;
+	}
+	else 
+	{
+		isSendWithAudio= NO;
+		
+	}
+	[self checkingInNow];
+
 }
 
 #pragma mark IBAction
@@ -442,51 +409,15 @@
 	//[test resignFirstResponder];
 	[tvTextMessage resignFirstResponder];	
 }
-
-- (IBAction)CheckingNow {
-	/*
-	if (countDownTimer != nil) 
-	{
-		[countDownTimer invalidate];
-		countDownTimer = nil;
-
-	}
-	else {
-		NSLog(@" count timer = nil");
-	}
-*/
-	
-	btnGetcontact.enabled = FALSE;
-	btnGetMessage.enabled = FALSE;
-	btnCheck.enabled = FALSE;
-	btnCancel.enabled = FALSE;
-	tvTextMessage.userInteractionEnabled = FALSE;	
-	
-	if ([[tvTextMessage.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] isEqualToString:@""]) {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-														message:NSLocalizedString(@"checkinWithOutMessage",@"")
-													   delegate:self
-											  cancelButtonTitle:@"Ok"
-											  otherButtonTitles:nil];
-		[alert show];
-		[self performSelector:@selector(dimisAlert:) withObject:alert afterDelay:2];
-		[alert release];
-		btnCheck.enabled = TRUE;
-		btnCancel.enabled = TRUE;
-		btnGetMessage.enabled = TRUE;
-		btnGetcontact.enabled = TRUE;
-		tvTextMessage.userInteractionEnabled = TRUE;
-		return;
-		
-	}
-	else {
-		lblGetMessage.text = tvTextMessage.text;
-		[self sendCheckin];
-	}
-		
-	actChecking.hidden = NO;
-	[actChecking startAnimating];
-	
+- (IBAction)CheckingNow
+{
+	UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Check-in Now" 
+											message:@"Do you want to send audio and images with this broadcast?" 
+											delegate:self
+										 cancelButtonTitle:@"YES" 
+										 otherButtonTitles:@"NO",nil];
+	[alert show];
+	[alert release];
 }
 -(IBAction)cancelAlert:(id)sender{
 	[self.navigationController popViewControllerAnimated:YES];
@@ -499,7 +430,30 @@
 	tvTextMessage.hidden = NO;
 	tvTextMessage.userInteractionEnabled = YES;
 }
-
+- (void)saveLastGroup
+{
+	NSString *defaultFile = [DOCUMENTS_FOLDER stringByAppendingPathComponent:@"defaultGroup.plist"];
+	
+	if ([[NSFileManager defaultManager ] fileExistsAtPath:defaultFile])
+	{
+		NSMutableArray *defaultGroupArr = [[NSMutableArray alloc] initWithContentsOfFile:defaultFile];
+		//NSLog(@"%@",defaultGroupArr);
+		[appDelegate.settingArray setObject:[defaultGroupArr objectAtIndex:1] forKey:CK_CheckingIn];
+		lblContact.text = [defaultGroupArr objectAtIndex:0];
+		[defaultGroupArr release];
+	}
+	else
+	{
+		NSLog(@"file not exist");
+		NSMutableArray *defaultGroupArr = [[NSMutableArray alloc]initWithObjects:@"Family",[appDelegate.settingArray objectForKey:ST_SendToAlert],nil];
+		//NSLog(@"default group : %@",[defaultGroupArr objectAtIndex:0]);
+		lblContact.text = [defaultGroupArr objectAtIndex:0];
+		//NSLog(@"array default group : %@",defaultGroupArr);
+		[defaultGroupArr writeToFile:defaultFile atomically:YES];
+		[defaultGroupArr release];
+	}
+	
+}
 #pragma mark PeoplePickerDelegate
 - (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person{
 	ABMultiValueRef multi = ABRecordCopyValue(person, kABPersonPhoneProperty);
@@ -531,46 +485,55 @@
 - (void)finishRequest:(NSDictionary *)arrayData andRestConnection:(id)connector{
 	if (flag ==1) 
 	{
-		
-	
-	NSLog(@" %@ ",arrayData);
+	//NSLog(@" %@ ",arrayData);
 	btnCheck.enabled = TRUE;
 	btnCancel.enabled = TRUE;
 	btnGetMessage.enabled = TRUE;
 	btnGetcontact.enabled = TRUE;
 	tvTextMessage.userInteractionEnabled = TRUE;
-	
+	//lblGetMessage.text = @"I'm ok";
 	lblStatusUpload.hidden = YES;
-
-		if (newFlag == 1) 
-		{
-			newFlag = 2;
-		}
-		else
-		{
-		tvTextMessage.hidden = YES;
-		tvTextMessage.text = @"I'm ok";
-		tvTextMessage.userInteractionEnabled = YES;
-		lblGetMessage.text =  @"I'm ok";
-		}
-		[tableViewCheckIn reloadData];
+	[tableViewCheckIn reloadData];
 	
-	if ([[[arrayData objectForKey:@"response"] objectForKey:@"success"] isEqualToString:@"true"]) {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success"
-														message:NSLocalizedString(@"chekin_success",@"")
-													   delegate:self
-											  cancelButtonTitle:@"Ok"
-											  otherButtonTitles:nil];
-		[alert show];
-		[self performSelector:@selector(dimisAlert:) withObject:alert afterDelay:2];
-		[alert release];
-		appDelegate.uploader.isSendAlert = NO;
+		NSString *defaultFile = [DOCUMENTS_FOLDER stringByAppendingPathComponent:@"defaultGroup.plist"];
+		NSMutableArray *defaultGroupArr = [[NSMutableArray alloc] init];
+		[defaultGroupArr addObject:lblContact.text];
+		[defaultGroupArr addObject:[appDelegate.settingArray objectForKey:CK_CheckingIn]];
+		//NSLog(@"set default group : %@",defaultGroupArr);
+		[defaultGroupArr writeToFile:defaultFile atomically:YES];
+		[defaultGroupArr release]; 
 		
+	if ([[[arrayData objectForKey:@"response"] objectForKey:@"success"] isEqualToString:@"true"]) {
+
+
+		
+		if (isSendWithAudio)
+		{
+
+            appDelegate.uploader.isSendAlert = YES;
+            appDelegate.uploader.isAlert = YES;
+            appDelegate.uploader.uploadId = [[[arrayData objectForKey:@"response"] objectForKey:@"id"] intValue];
+            appDelegate.flagsentalert = 2;
+			[self sendAudioImage];
+		}
+		else 
+		{
+			
+			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success"
+															message:NSLocalizedString(@"chekin_success",@"")
+														   delegate:nil
+												  cancelButtonTitle:@"Ok"
+												  otherButtonTitles:nil];
+			[alert show];
+			[self performSelector:@selector(dimisAlert:) withObject:alert afterDelay:2];
+			[alert release];
+		}
+
 	}
 	else {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
 														message:@"Error with send sms"
-													   delegate:self
+													   delegate:nil
 											  cancelButtonTitle:@"Ok"
 											  otherButtonTitles:nil];
 		[alert show];
@@ -583,9 +546,36 @@
 	else 
 	if (flag == 2) 
 	{
+		
+		//// set default group
+		/*
+		NSString *defaultFile = [DOCUMENTS_FOLDER stringByAppendingPathComponent:@"defaultGroup.plist"];
+		
+		if ([[NSFileManager defaultManager ] fileExistsAtPath:defaultFile])
+		{
+			NSLog(@"file exist");
+			NSMutableArray *defaultGroupArr = [[NSMutableArray alloc] initWithContentsOfFile:defaultFile];
+			NSLog(@"%@",defaultGroupArr);
+			[appDelegate.settingArray setObject:[defaultGroupArr objectAtIndex:1] forKey:CK_CheckingIn];
+			lblContact.text = [defaultGroupArr objectAtIndex:0];
+			[defaultGroupArr release];
+		}
+		else
+		{
+			NSLog(@"file not exist");
+			NSMutableArray *defaultGroupArr = [[NSMutableArray alloc]initWithObjects:@"Family",[appDelegate.settingArray objectForKey:ST_SendToAlert],nil];
+			NSLog(@"default group : %@",[defaultGroupArr objectAtIndex:0]);
+			lblContact.text = [defaultGroupArr objectAtIndex:0];
+			NSLog(@"array default group : %@",defaultGroupArr);
+			[defaultGroupArr writeToFile:defaultFile atomically:YES];
+			[defaultGroupArr release];
+		}
+		 */
+		
+		[self saveLastGroup];
+		/////
 		groupArray = [[NSMutableArray alloc ] init];
 		typeArray = [[NSMutableArray alloc ] init];
-		NSLog(@" get group : %@",arrayData);
 		if ([[[arrayData objectForKey:@"response"] objectForKey:@"success"] isEqualToString:@"true"]) 
 		{
 			///
@@ -599,33 +589,20 @@
 			
 			
 			NSDictionary *data = [[arrayData objectForKey:@"response"] objectForKey:@"data"];
+			NSLog(@"data : %@",data);
 			for(NSDictionary *dict in data)
 			{
 				[actionSheet1 addButtonWithTitle:[dict objectForKey:@"name"]];
 				[groupArray  addObject:[dict objectForKey:@"name"]];
 				[typeArray addObject:[dict objectForKey:@"id"]];
 				
-				if ([[dict objectForKey:@"name"] isEqualToString:@"Family"]) 
-				{
-
-					NSLog(@"set family alert");
-					[appDelegate.settingArray setObject:[dict objectForKey:@"id"] forKey:CK_CheckingIn];
-				}
-				
-			//	NSInteger type = [[dict objectForKey:@"type"] intValue];
-				/*
-				if( type == [[appDelegate.settingArray objectForKey:ST_SendToAlert] intValue])
-				{
-					lblContact.text = [dict objectForKey:@"name"];
-				}
-				 */
 			}
 			[actionSheet1 addButtonWithTitle:@"All Groups"];
 			[actionSheet1 addButtonWithTitle:@"Single Contact"];
 			
 		}else
 		{
-			NSLog(@"getcontact error");
+			
 		}
 		
 	}
@@ -649,7 +626,7 @@
 }
 //function send checkin to server
 - (void)sendCheckin {
-	newFlag = 2;
+//	newFlag = 2;
 	lblStatusUpload.text = @"Checking In...";
 	lblStatusUpload.hidden = NO;
 	
@@ -669,54 +646,41 @@
 				{
 					min_index = i;
 					min =[[countArray objectAtIndex:i] intValue];
-					//NSLog(@"min index : %d",min_index);
 				}
 				else 
 				{
-					//NSLog(@"trong vong for");
 				}
-
-				
-				  
-				
 			}
 			[arrayCheckin replaceObjectAtIndex:min_index withObject:message];
-			NSLog(@"replace count");
-			NSLog(@"min index : %d",min_index);
 			[countArray replaceObjectAtIndex:min_index withObject:@"1"];
 			NSString *fileCount=[DOCUMENTS_FOLDER stringByAppendingPathComponent:@"count.plist"];
-
 			[countArray writeToFile:fileCount atomically:YES];
-			
-			NSLog(@" array data : %@",arrayCheckin);
-			NSLog(@" array count : %@",countArray);
-			
 		}
 		[arrayCheckin writeToFile:file atomically:YES];
-
 	}
 	[message release];
 	tvTextMessage.hidden = YES;
-		
+	labelCountMessage.hidden = YES;
 	NSArray *key = [NSArray arrayWithObjects:@"token",@"phoneId",@"type",@"toGroup",@"singleContact",@"message",nil];
 	NSArray *obj = [NSArray arrayWithObjects:appDelegate.apiKey,[NSString stringWithFormat:@"%d",appDelegate.phoneID],@"2",
 					[appDelegate.settingArray objectForKey:CK_CheckingIn],lblContact.text,
 					tvTextMessage.text,nil];
 	NSDictionary *param =[NSDictionary dictionaryWithObjects:obj forKeys:key];
-	
-	
 	flag = 1;
 	[restConnection postPath:[NSString stringWithFormat:@"/alert?latitude=%@&longtitude=%@&format=json",appDelegate.latitudeString,appDelegate.longitudeString] withOptions:param];
 }
 
 #pragma mark -
 #pragma mark UploaderDelegate
-- (void)uploadFinish {
-	
+- (void)uploadFinish 
+{
+	//NSLog(@"up load finish");
+ 
 }
 
-- (void)requestUploadIdFinish:(NSInteger)uploadId {
-
+- (void)requestUploadIdFinish:(NSInteger)uploadId 
+{
+	//NSLog(@"*****request up load finish********");
 }
 
 @end

@@ -8,7 +8,6 @@
 
 #import "SOSBEACONAppDelegate.h"
 #import "TellUs.h"
-#import "JSON.h"
 
 @implementation TellUs
 /*
@@ -26,8 +25,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 	self.title =@"Contact SOSbeacon";
-	RestConnection *tempConnection = [[RestConnection alloc] initWithBaseURL:SERVER_URL];
-	restConnection = tempConnection;
+	restConnection = [[RestConnection alloc] initWithBaseURL:SERVER_URL];
 	restConnection.delegate = self;
 	appDelegate = (SOSBEACONAppDelegate*)[[UIApplication sharedApplication] delegate];
 	scollView.contentSize = CGSizeMake(320, 800);
@@ -58,6 +56,16 @@
 
 
 - (void)dealloc {
+	restConnection.delegate = nil;
+	[restConnection release];
+	[scollView release];
+	[txtSubject release];
+	[tvMessage release];
+	[emailcc release];
+	[btnSend release];
+	[btnCancel release];
+	[actSending release];
+	[fromMail release];
     [super dealloc];
 }
 
@@ -92,7 +100,7 @@
 		UIDevice *device = [UIDevice currentDevice];
 		
 		
-		NSLog(@"subject - txt %@%@",txtSubject.text,tvMessage.text);
+		//NSLog(@"subject - txt %@%@",txtSubject.text,tvMessage.text);
 		NSString *token =appDelegate.apiKey;
 		NSString *type = @"2";
 		NSString *phoneId =[NSString stringWithFormat:@"%d",appDelegate.phoneID];
@@ -124,7 +132,7 @@
 }
 -(void)finishRequest:(NSDictionary *)arrayData andRestConnection:(id)connector
 {
-	NSLog(@" array data : %@",arrayData);
+	//NSLog(@" array data : %@",arrayData);
 	
 	if([[[arrayData objectForKey:@"response"] objectForKey:@"success"] isEqualToString:@"true"])
 	{

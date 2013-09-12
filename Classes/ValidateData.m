@@ -48,16 +48,17 @@ BOOL checkSpace (NSString *nameSpace){
 
 	if ([stringName isEqualToString:@""]) {
 		
-		NSLog(@"False");
+	//	NSLog(@"False");
 		return FALSE;
 	}else {
-		NSLog(@"True");
+	//	NSLog(@"True");
 		return TRUE;
 	}
 
 }
 
 void alertView(){
+	/*
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error Internet Connection"
 													    message:NSLocalizedString(@"Cannotgetdata",@"")
 													   delegate:nil
@@ -67,6 +68,7 @@ void alertView(){
 	[alertView release];
 	
 	return;
+	 */
 }
 
 

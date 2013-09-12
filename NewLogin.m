@@ -3,9 +3,9 @@
 //  SOSBEACON
 //
 //  Created by bon on 7/27/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 CNC Software. All rights reserved.
 //
-//#define SERVER_URL @"http://sosbeacon.org:8085"
+
 #define CK_CheckingIn @"checkingIn"
 #import "SettingsMain.h"
 #import "NewLogin.h"
@@ -301,6 +301,7 @@
 	actSignup.hidden = YES;
 	cancel_button.hidden = NO;
 	submit_button.hidden = NO;
+    
 	/*
 	//NSLog(@"cant connection");
 	submit_button.enabled = TRUE;
@@ -323,6 +324,8 @@
 {
 
     NSLog(@"%@",arrayData);
+    
+    [appDelegate hiddenSplash];
 
 	[actSignup stopAnimating];
 	actSignup.hidden = YES;
@@ -401,10 +404,10 @@
 		}
 		else
 		{
-			NSLog(@"file not exist");
+			//NSLog(@"file not exist");
 			NSMutableArray *defaultGroupArr = [[NSMutableArray alloc]initWithObjects:@"Family",[appDelegate.settingArray objectForKey:ST_SendToAlert],nil];
 			//[defaultGroup addObject:[appDelegate.settingArray objectForKey:ST_SendToAlert]]
-			NSLog(@"array default group : %@",defaultGroupArr);
+			//NSLog(@"array default group : %@",defaultGroupArr);
 			[defaultGroupArr writeToFile:defaultFile atomically:YES];
 			[defaultGroupArr release];
 		}

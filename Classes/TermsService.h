@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import"SOSBEACONAppDelegate.h"
-
+#import"SplashView.h"
 @interface TermsService : UIViewController {
 	SOSBEACONAppDelegate *appdelegate;
+	SplashView *splashview;
 
 }
 - (IBAction)Exit;

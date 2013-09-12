@@ -20,6 +20,9 @@
 	Uploader *uploader;
 	BOOL upNext;
 	BOOL endUpload;
+    NSInteger totalCount;
+    NSInteger sucessCount;
+    NSInteger failCount;
 }
 
 @property(nonatomic) BOOL endUpload;

@@ -69,4 +69,6 @@ typedef enum {ActionType_None=0,ActionType_OK=1,ActionType_Help=2}ActionType;
 -(void)showvideo;
 -(void)timerTick;
 
+-(void)hideAllUIView;
+
 @end

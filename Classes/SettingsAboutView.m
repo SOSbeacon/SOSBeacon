@@ -47,9 +47,9 @@
 }
 
 - (void)viewDidUnload {
-	[self.lblTitle release];
-	[self.lblCopyRight release];
-	[self.lblVersion release];
+	[lblTitle release];
+	[lblCopyRight release];
+	[lblVersion release];
 	
     [super viewDidUnload];
     // Release any retained subviews of the main view.

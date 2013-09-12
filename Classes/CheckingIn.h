@@ -48,10 +48,10 @@
 	NSMutableArray *groupArray;
 	NSMutableArray *typeArray;
 	UIActionSheet *actionSheet1;
-	NSInteger newFlag;
-		//NSTimer *countDownTimer;
-//	IBOutlet UITextField *test;
-
+	//NSInteger newFlag;
+	BOOL isSendWithAudio; 
+    NSString *familyGroupId;
+	IBOutlet UILabel *labelCountMessage;
 }
 @property(nonatomic,retain) NSMutableArray *groupArray;
 @property(nonatomic,retain) NSMutableArray *typeArray;
@@ -63,7 +63,6 @@
 @property (nonatomic, retain) IBOutlet UILabel *lblContact;
 @property (nonatomic, retain) RestConnection *restConnection;
 
-//-(void)checkTextLen;
 -(IBAction)cancelAlert:(id)sender;
 - (IBAction)GetContact;
 - (IBAction)backgroundTap:(id)sender;
@@ -73,5 +72,7 @@
 - (void)sendCheckin;
 - (IBAction)getMessageCheckIn;
 - (void)requestUploadIdFinish:(NSInteger)uploadId;
-
+-(void)sendAudioImage;
+-(void)checkingInNow;
+- (void)saveLastGroup;
 @end

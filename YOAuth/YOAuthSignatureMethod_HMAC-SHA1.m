@@ -46,6 +46,7 @@
     return [base64EncodedResult autorelease];
 }
 
+
 - (BOOL)checkSignature:(NSString *)aSignature withSignableString:(NSString *)aSignableString andSecrets:(NSString *)aSecret
 {
 	NSString *theGeneratedSignature = [self buildSignatureWithRequest:aSignableString andSecrets:aSecret];

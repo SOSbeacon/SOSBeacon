@@ -3,7 +3,7 @@
 //  SOSBEACON
 //
 //  Created by bon on 8/16/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 CNC Software. All rights reserved.
 //
 
 #import "VideoViewController.h"
@@ -32,7 +32,7 @@
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
-	NSString *urlAdress = @"http://sosbeacon.org:8085/web/about/take-the-tour";
+	NSString *urlAdress = @"http://sosbeacon.org/web/about/take-the-tour";
 	NSURL *url=[NSURL URLWithString:urlAdress];
 	NSURLRequest *requestObject =[NSURLRequest requestWithURL:url];
 	[webview loadRequest:requestObject];

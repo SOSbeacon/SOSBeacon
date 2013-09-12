@@ -28,9 +28,12 @@
 	//appDelegate = (SOSBEACONAppDelegate*)[[UIApplication sharedApplication] delegate];
 	viewSplash.frame = CGRectMake(0, 0, 320, 480);
 	[actSplash startAnimating];
-	if (!noConnection) {
+	
+    /*
+    if (!noConnection) {
 		timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(fadeScreen) userInfo:nil repeats:NO];
 	}
+    */
 }
 
 /*
@@ -61,13 +64,13 @@
 	[splashImageView release];
 	[viewSplash release];
 	[actSplash release];
-	[timer release];
     [super dealloc];
 }
 
 #pragma mark Other Function
 - (void)fadeScreen
 {
+	[timer invalidate];
 	[UIView beginAnimations:nil context:nil];
 	[UIView setAnimationDuration:1.0];      
 	[UIView setAnimationDelegate:self];  
@@ -81,10 +84,17 @@
 	[UIView setAnimationDuration:0.5];        
 	self.view.alpha = 1.0;
 	[UIView commitAnimations]; 
-	[splashImageView removeFromSuperview];
+	///[splashImageView removeFromSuperview];
 	[self.view removeFromSuperview];
-	//[appDelegate showVideo];
+//	[self dismissModalViewControllerAnimated:NO];
 	
 }
+-(void)ShowLoading
+{
 
+}
+- (void)removeView
+{
+	[self.view removeFromSuperview];
+}
 @end

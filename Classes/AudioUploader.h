@@ -20,6 +20,10 @@
 	Uploader *uploader;
 	BOOL upNext;
 	BOOL endUpload;
+    NSInteger CountUpload;
+    NSTimer *timer;
+    NSInteger countTime;
+
 }
 
 @property(nonatomic) BOOL endUpload;

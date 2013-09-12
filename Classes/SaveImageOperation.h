@@ -17,7 +17,9 @@
 	BOOL isDone;
 
 	NSTimeInterval startTime;
+    NSInteger imageOritation;
 }
+@property(nonatomic)   NSInteger imageOritation; 
 @property (retain) UIImage *imageToSave;
 @property (retain) NSObject *mainDelegate;
 

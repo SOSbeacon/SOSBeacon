@@ -34,7 +34,8 @@
 
 
 - (void)dealloc {
-	[self.images release];
+    
+	[images release];
 	[toAddresses release];
 	[ccAddresses release];
 	[bccAddresses release];
@@ -47,7 +48,7 @@
 }
 #pragma mark Email Methods
 - (void)showEmail {
-	NSLog(@"showEmail",nil);
+	//NSLog(@"showEmail",nil);
 	
 	if (![MFMailComposeViewController canSendMail]) {
 		UIAlertView *cantMailAlert = [[UIAlertView alloc] initWithTitle:@"Email Not Avail"
@@ -140,11 +141,13 @@
 	NSString *appUrl=(NSString *)[[[NSBundle mainBundle] infoDictionary] objectForKey:@"iTunesLink"];
 	NSString *body=[[NSString alloc] initWithFormat:@"Check out SOSbeacon, <a href=\"%@\">SOSbeacon</a>",appUrl];
 	
-	NSLog(@"showEmail");
+	//NSLog(@"showEmail");
 	EmailView *emailer=[[EmailView alloc] init] ;
 	
 	emailer.subject=subject;
 	emailer.body=body;
+
+    [body release];
 	emailer.mainView=ctrl;
 	emailer.tintColor=color;
 	

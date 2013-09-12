@@ -27,18 +27,24 @@
 		if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
 		{
 			self.sourceType = UIImagePickerControllerSourceTypeCamera;
-			
+			NSLog(@"source **** CAMERA");
 		}
-		else self.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+		else 
+        {
+            self.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            NSLog(@"source **** PHOTOLIBRARY");
+ 
+        }
 		
 		self.showsCameraControls = NO;
-		//self.navigationBarHidden = YES;
-		//self.toolbarHidden = YES;
-		
 		autoMode=YES;
 		appDelegate = (SOSBEACONAppDelegate*)[[UIApplication sharedApplication] delegate];
 
 	}
+    else
+    {
+        NSLog(@"can not init ");
+    }
 	return self;
 }
 
@@ -54,37 +60,25 @@
 	countTime = 30;
 	countDown=10;
 	[self updateCountDown];
-	//if (autoMode)
-	//	[self performSelector:@selector(beginCapturePhoto) withObject:nil afterDelay:kTimeWaitForCap];
 	countDownTimer=[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerTick) userInfo:nil repeats:YES];
 }
 
-- (void)beginCapturePhoto {
-	if(capCount==-1) return;
-	
-	[appDelegate playSound3];
-	[self performSelector:@selector(capturePhoto:) withObject:nil afterDelay:3];
-}
 
-- (void)capturePhoto 
+- (void)captureImage 
 {
-	
 	if(capCount==-1) return;
-	
 	[self takePicture];
-	//capCount++;
-	//[captorView.capturePhotoButton setEnabled:NO];
 	captorView.captureButton.hidden = YES;
-	//[captorView.capturePhotoButton se]
 }
 
 -(void)timerTick{
 	
 	countTime--;
 	countDown--;
+
 	if (((countTime  == 20)||(countTime == 10)) && captorView.isauto) 
 	{
-		[self capturePhoto];
+		[self captureImage];
 	}
 	if (((countTime == 13) || (countTime == 23)) && captorView.isauto) 
 	{
@@ -98,7 +92,6 @@
 		[captorView.busy startAnimating];
 		captorView.lnlTopMessage.textColor =[ UIColor redColor];
 		captorView.lnlTopMessage.text=[NSString stringWithFormat:@"Next Photo in %d secs",countDown];
-		//[captorView.capturePhotoButton setEnabled:NO];
 		captorView.captureButton.hidden = YES;
 	}
 	else
@@ -118,12 +111,11 @@
 	//NSLog(@"timerTick",nil);
 	
 }
--(void)updateCountDown{
-	//captorView.lnlTopMessage.text=[NSString stringWithFormat:@"Next Photo in %i secs",countDown];
+-(void)updateCountDown
+{
 }
 - (void)dealloc {
-	NSLog(@"DEALLOC Camera View");
-	[countDownTimer release];
+	NSLog(@"********** DEALLOC Camera View  ************");
     [super dealloc];
 }
 

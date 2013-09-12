@@ -23,12 +23,12 @@
 @synthesize personalIndex;
 @synthesize tableGroupDetail;
 @synthesize restConnection,groupID, groupName;
-
+@synthesize readOnly, otherGroup;
 
 #pragma mark - Memory management
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-	 NSLog(@"Memory error table detail!!!!!!!!!");
+	// NSLog(@"Memory error table detail!!!!!!!!!");
 }
 
 #pragma mark -
@@ -49,22 +49,24 @@
 	
     fieldLabels = [[NSArray alloc] initWithObjects:@"Name:", @"Email:", @"VoicePhone:", @"TextPhone:", nil];
 	
-	UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]
-                                     initWithTitle:@"Back"
-                                     style:UIBarButtonItemStylePlain
-                                     target:self
-                                     action:@selector(cancel:)];
-    self.navigationItem.leftBarButtonItem = cancelButton;
-    [cancelButton release];
+    if (!readOnly) {
+        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]
+                                         initWithTitle:@"Back"
+                                         style:UIBarButtonItemStylePlain
+                                         target:self
+                                         action:@selector(cancel:)];
+        self.navigationItem.leftBarButtonItem = cancelButton;
+        [cancelButton release];
+        
+        saveButton = [[UIBarButtonItem alloc]
+                      initWithTitle:@"Save" 
+                      style:UIBarButtonItemStylePlain
+                      target:self
+                      action:@selector(save:)];
+        self.navigationItem.rightBarButtonItem = saveButton;
+        [saveButton release];
+    }
     
-    saveButton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Save" 
-                                   style:UIBarButtonItemStylePlain
-                                   target:self
-                                   action:@selector(save:)];
-    self.navigationItem.rightBarButtonItem = saveButton;
-    [saveButton release];
-
 	if(personal==nil)
 	{
 		personalTemp = [[Personal alloc] init];
@@ -82,8 +84,9 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     // Return the number of sections. 
-	
-	if(personalIndex==-1) return 2;
+    if (personalIndex == -2) return 1;
+    else
+	if (personalIndex == -1) return 2;
 	else return 2;
 	 
 	/*
@@ -107,18 +110,13 @@
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     static NSString *CellIdentifier = @"Cell";
-	
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
 		
 		if (personal.typeContact) {
-			
-			//// sua add contact button;
 			cell.userInteractionEnabled = FALSE;
-			//cell.userInteractionEnabled = TRUE;
 			saveButton.enabled = FALSE;
 		}else {
 			saveButton.enabled = TRUE;
@@ -131,6 +129,7 @@
 			label.textAlignment = UITextAlignmentRight;
 			label.tag = 1059;
 			label.font = [UIFont boldSystemFontOfSize:14];
+            label.backgroundColor = [UIColor clearColor];
 			[cell.contentView addSubview:label];
 			[label release];
 		
@@ -163,7 +162,6 @@
 			//label.text = @"Group:";
 		}
 
-		
 		switch (row) {
 			case kNameRowIndex:
 				textField.text = personalTemp.contactName;
@@ -202,12 +200,17 @@
 		{
 			cell.textLabel.font = [UIFont systemFontOfSize:16.0];
 			cell.textLabel.text = @"Default contact cannot be changed";
-
 		}
+        else
+        if (otherGroup) {
+			cell.textLabel.font = [UIFont systemFontOfSize:16.0];            
+			cell.textLabel.text = @"This contact cannot be changed";      
+            cell.textLabel.textColor = [UIColor grayColor];
+            cell.userInteractionEnabled = FALSE;
+        }
 		else 
 		cell.textLabel.text = @"Add from phone contact list";
 	}
-
 	return cell;
 }
 
@@ -223,8 +226,6 @@
 		[appDelegate.tabBarController presentModalViewController:picker animated:YES];
 		
 		[picker release];
-		
-		
 		}
 
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -246,7 +247,11 @@
 	if(ABMultiValueGetCount(emails)>0)
 	{
 		NSString *email = (NSString*)ABMultiValueCopyValueAtIndex(emails, 0);
+       // NSString *email =[[NSString alloc] initWithString:(NSString*)ABMultiValueCopyValueAtIndex(emails, 0)];
 		personalTemp.email = email;
+        
+        //NSLog(@"release email in table personalDetail");
+    [email  release];
 	}
 	else {
 		personalTemp.email = @""; 
@@ -257,16 +262,16 @@
 	if(firstName) 
 		fullName=firstName;
 	if(lastName) {
-		//sua leak;
-	//	fullName = fullName==nil ? fullName=lastName : [fullName stringByAppendingFormat:@" %@",lastName];
-		if (fullName) 
+//	fullName = fullName==nil ? fullName=lastName : [fullName stringByAppendingFormat:@" %@",lastName];
+	
+		if (fullName == nil)
 		{
 			fullName = lastName;
 		}
-		else {
-			fullName = [fullName stringByAppendingFormat:@" %@",lastName];
+		else
+		{
+			fullName = [fullName stringByAppendingFormat:@"%@",lastName];
 		}
-
 	}
 	
 	
@@ -327,6 +332,10 @@
 }
 
 -(IBAction)cancel:(id)sender{
+    if (otherGroup) { // cannot edit!
+        [self.navigationController popViewControllerAnimated:YES];
+        return;
+    }
 	appDelegate.saveContact=NO;
 	appDelegate.savePerson=NO;
 	[self checkEditContact];
@@ -352,7 +361,19 @@
 
 - (IBAction)save:(id)sender {
 	[textFieldBeingEdited resignFirstResponder];
-	
+    
+    if (otherGroup) {
+        NSString *message = [NSString stringWithFormat:@"You cannot modify contacts in the \"%@\" group. See your group manager", self.groupName];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil 
+                                                            message:message 
+                                                           delegate:nil 
+                                                  cancelButtonTitle:@"OK" 
+                                                  otherButtonTitles:nil];
+        [alertView show];
+        [alertView release];
+        return;
+    }
+    
 	appDelegate.saveContact = YES;
 	saveButton.enabled = NO;
 	actContact.hidden = NO;
@@ -539,7 +560,7 @@
 	}
 	
 	
-	/////****
+	
 	NSString *phone = [NSString stringWithString:personalTemp.textphone];
 	if (phone != @"")
 	{			
@@ -557,11 +578,15 @@
 	
 	 */
 	////////////*************
-	
 	if (personalIndex == -1) {
 		//Add new contact
 		personalTemp.status = CONTACT_STATUS_NEW;
-		[tableGroupDetail.arrayContacts addObject:personalTemp];
+        if (tableGroupDetail.hasJoinFeature && tableGroupDetail.arrayContacts.count > 1) {
+            [tableGroupDetail.arrayContacts insertObject:personalTemp atIndex:1];
+        }
+        else {
+            [tableGroupDetail.arrayContacts addObject:personalTemp];
+        }        
 	}else {
 		//Edit contact
 		if(personalTemp.status!= CONTACT_STATUS_NEW)
@@ -572,11 +597,23 @@
 	tableGroupDetail.isEdited = YES;
 	appDelegate.saveContact = YES;
 	[tableGroupDetail.tableView reloadData];
-	//[self.navigationController popViewControllerAnimated:YES];
 	[self.navigationController popToViewController:[[self.navigationController viewControllers] objectAtIndex:1] animated:YES];
-	
 }
+
 - (void)saveIfOutTab {
+    [textFieldBeingEdited resignFirstResponder];
+    
+    if (otherGroup) {
+        NSString *message = [NSString stringWithFormat:@"You cannot modify contacts in the \"%@\" group. See your group manager", self.groupName];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil 
+                                                            message:message 
+                                                           delegate:nil 
+                                                  cancelButtonTitle:@"OK" 
+                                                  otherButtonTitles:nil];
+        [alertView show];
+        [alertView release];
+        return;
+    }
 	
 	appDelegate.saveContact = YES;
 	saveButton.enabled = NO;
@@ -738,7 +775,12 @@
 	if (personalIndex == -1) {
 		//Add new contact
 		personalTemp.status = CONTACT_STATUS_NEW;
-		[tableGroupDetail.arrayContacts addObject:personalTemp];
+        if (tableGroupDetail.hasJoinFeature && tableGroupDetail.arrayContacts.count > 1) {
+            [tableGroupDetail.arrayContacts insertObject:personalTemp atIndex:1];
+        }
+        else {
+            [tableGroupDetail.arrayContacts addObject:personalTemp];
+        }        
 	}else {
 		//Edit contact
 		if(personalTemp.status!=CONTACT_STATUS_NEW)
@@ -749,9 +791,6 @@
 	tableGroupDetail.isEdited = YES;
 	appDelegate.saveContact = YES;
 	[tableGroupDetail.tableView reloadData];
-	
-	
-	
 }
 
 
@@ -888,15 +927,15 @@
 				
 				///
 				NSString *strcut = [phonevoid substringToIndex:2];
-				NSLog(@" %@",phonevoid);
-				NSLog(@" %@",strcut);
+				//NSLog(@" %@",phonevoid);
+				//NSLog(@" %@",strcut);
 				if ([strcut isEqualToString:@"+1"]||[strcut  isEqualToString:@"1+"]) 
 				{
 					if ([phonevoid  length] >2) 
 					{
 						NSString *phone = [[phonevoid substringFromIndex:2] retain];
 						personalTemp.voidphone = phone;
-						NSLog(@"textphone after cut: %@",personalTemp.voidphone);
+					//	NSLog(@"textphone after cut: %@",personalTemp.voidphone);
 						textField.text = phone;
 						//[value1 release];
 						[phone release];
@@ -911,11 +950,11 @@
 				///
 				if (b == '1'||b=='+')
 				{
-					NSLog(@"textphone: %@",personalTemp.voidphone);
 					NSString *phonevoid1 = [[phonevoid substringFromIndex:1] retain];
+                   // NSString *phonevoid1 = [phonevoid substringFromIndex:1];
 					personalTemp.voidphone = phonevoid1;
-					NSLog(@"textphone after cut: %@",personalTemp.voidphone);
 					textField.text = phonevoid1;
+                    [phonevoid1 release];
 					
 				}
 			}
@@ -927,15 +966,15 @@
 			char a =[phone characterAtIndex:0];
 			////
 			NSString *strcut1 = [phone substringToIndex:2];
-			NSLog(@" %@",phone);
-			NSLog(@" %@",strcut1);
+		//	NSLog(@" %@",phone);
+		///	NSLog(@" %@",strcut1);
 			if ([strcut1 isEqualToString:@"+1"]||[strcut1  isEqualToString:@"1+"]) 
 			{
 				if ([phone  length] >2) 
 				{
 					NSString *phone12 = [[phone substringFromIndex:2] retain];
 					personalTemp.voidphone = phone12;
-					NSLog(@"textphone after cut: %@",personalTemp.voidphone);
+					//NSLog(@"textphone after cut: %@",personalTemp.voidphone);
 					textField.text = phone12;
 					//[value1 release];
 					[phone12 release];
@@ -949,12 +988,13 @@
 			else
 			if (a == '1')
 			{
-				NSLog(@"alo");
+				//NSLog(@"alo");
 				NSString *phone1 = [[phone substringFromIndex:1] retain];
 								
 				personalTemp.textphone = phone1;
-				NSLog(@" text phone : %@",personalTemp.textphone);
+				//NSLog(@" text phone : %@",personalTemp.textphone);
 				textField.text = phone1;
+                [phone1 release];
 			}
 			break;
 		default:

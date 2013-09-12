@@ -94,19 +94,20 @@
 	
 	[cell setAccessoryType:UITableViewCellAccessoryNone];
 	for (int i = 0; i < [selectedIndexList count]; i++) {
-		if (indexPath == [selectedIndexList objectAtIndex:i]) {
+        if ([indexPath compare:[selectedIndexList objectAtIndex:i]] == NSOrderedSame) {
 			[cell setAccessoryType:UITableViewCellAccessoryCheckmark];
-		}
+		}        
 	}
 	cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.textLabel.text = [[contactList objectAtIndex:indexPath.row] objectForKey:@"email"];
 	cell.detailTextLabel.text = [NSString stringWithFormat:@"%@  %@",[[contactList objectAtIndex:indexPath.row] objectForKey:@"name"],[[contactList objectAtIndex:indexPath.row] objectForKey:@"phone"]];
     return cell;
 }
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
 	for (int i = 0; i < [selectedIndexList count]; i++) {
-		if (indexPath == [selectedIndexList objectAtIndex:i]) {
+        if ([indexPath compare:[selectedIndexList objectAtIndex:i]] == NSOrderedSame) {
 			[cell setAccessoryType:UITableViewCellAccessoryNone];
 			[selectedIndexList removeObject:indexPath];
 			return;
@@ -145,22 +146,29 @@
 				[selectedEmail addObject:[contactList objectAtIndex:index]];
 				Personal *aPersonal = [[Personal alloc] init];
 				aPersonal.contactName = [[contactList objectAtIndex:index] objectForKey:@"name"];
+                if ([[[contactList objectAtIndex:index] objectForKey:@"name"] isEqual:@""]) {
+                    aPersonal.contactName = [[contactList objectAtIndex:index] objectForKey:@"email"];
+                }
+                
 				aPersonal.email = [[contactList objectAtIndex:index] objectForKey:@"email"];
 				aPersonal.voidphone = [[contactList objectAtIndex:index] objectForKey:@"phone"];
 				aPersonal.textphone = @"";
 				
 				aPersonal.status = CONTACT_STATUS_NEW;
-				[tableGroup.arrayContacts addObject:aPersonal];
+                if (tableGroup.hasJoinFeature && tableGroup.arrayContacts.count > 1) {
+                    [tableGroup.arrayContacts insertObject:aPersonal atIndex:1];
+                }
+                else {
+                    [tableGroup.arrayContacts addObject:aPersonal];
+                }
 				tableGroup.isEdited = YES;
 				SOSBEACONAppDelegate *appDelegate = (SOSBEACONAppDelegate*)[[UIApplication sharedApplication] delegate];
 				appDelegate.saveContact = YES;
 				[tableGroup.tableView reloadData];
-				//[self.navigationController popViewControllerAnimated:YES];
 				[self.navigationController popToViewController:tableGroup animated:YES];
 				[aPersonal release];
 
 			}
-		//	NSLog(@"%@",selectedEmail);
 		}
 		else 
 		if(buttonIndex == 1)

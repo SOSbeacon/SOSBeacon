@@ -8,9 +8,7 @@
 
 #import "SettingsStorageView.h"
 #import "SOSBEACONAppDelegate.h"
-#import "LoginView.h"
 #import "TermsService.h"
-#import "Register.h"
 #import "NewLogin.h"
 
 @implementation SettingsStorageView
@@ -78,35 +76,36 @@
 	[alert show];
 	[alert release];
 }
+
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
 	if (buttonIndex == 0) {
 		if (alertIndex==1) {
 			SOSBEACONAppDelegate *appDelegate = (SOSBEACONAppDelegate*)[[UIApplication sharedApplication] delegate];
 			appDelegate.logout = YES;
-			/*
-			NSMutableDictionary *newinfo = [[NSMutableDictionary alloc] init];
-		    [newinfo setObject:@"" forKey:@"imei"];
-			[newinfo setObject:@"" forKey:@"number"];
-			[newinfo writeToFile:[NSString stringWithFormat:@"%@/newlogin.plist",DOCUMENTS_FOLDER] atomically:YES];		
-			[newinfo autorelease];
-			 */
-		//	NewLogin *login = [[NewLogin alloc] init];
-		//	login.flag = 2;
+
+			NSString *defaultFile = [DOCUMENTS_FOLDER stringByAppendingPathComponent:@"defaultGroup.plist"];
+			if ([[NSFileManager defaultManager] fileExistsAtPath:defaultFile])
+			{
+				[[NSFileManager defaultManager]removeItemAtPath:defaultFile error:nil];
+			}
 			if (appDelegate.newlogin) 
 			{
-				NSLog(@"release newlogin");
-				[appDelegate.newlogin release];
+				//[appDelegate.newlogin release];
+				appDelegate.newlogin.strImei = nil;
+				appDelegate.newlogin.strPhoneNumber = nil;
+				 appDelegate.newlogin = nil;
 			}
-			appDelegate.newlogin =[[NewLogin alloc] init];
+
+            NewLogin *loginView =[[NewLogin alloc ]init];
+			appDelegate.newlogin = loginView;
+            [loginView release];
+			
+			
 			appDelegate.newlogin.flag = 2;
-			NSLog(@"flag = 2");
 			[self presentModalViewController:appDelegate.newlogin animated:YES];
 			[self.navigationController popViewControllerAnimated:YES];
 			appDelegate.tabBarController.selectedIndex= 0;
-		//	[appDelegate.groupView release];
-		//	appDelegate.groupView = nil;
-
-			//[login release];
+		
 			appDelegate.flagSetting = 1;
 		//	NSLog(@"flag setting: %d",appDelegate.flagSetting);
 			[[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/active.plist",DOCUMENTS_FOLDER] error:nil];
@@ -118,7 +117,9 @@
 			
 			
 			NSString *pass = [[NSString alloc] initWithString:@"1"];
+			NSLog(@"Write file");
 			[pass writeToFile:[NSString stringWithFormat:@"%@/info.plist",DOCUMENTS_FOLDER] atomically:YES];
+			//[pass writeToFile:[NSString stringWithFormat:@"%@/info.plist",DOCUMENTS_FOLDER] atomically:YES encoding:NSUnicodeStringEncoding error:nil];
 			[pass release];
 			
 			

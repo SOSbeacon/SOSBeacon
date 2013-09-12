@@ -112,7 +112,8 @@
 				personalDetail.title = @"Add Contact";
 				personalDetail.tableGroupDetail=[[self.navigationController viewControllers] objectAtIndex:1];
 				personalDetail.groupID=groupID;
-				personalDetail.groupName = [[NSString alloc] initWithString:groupName];
+                NSLog(@"personalDetail.groupName AddcontactView");
+                personalDetail.groupName = groupName;
 				personalDetail.personal = nil;
 				personalDetail.personalIndex = 0;
 				[self.navigationController pushViewController:personalDetail animated:YES];
@@ -212,15 +213,20 @@
 	
 	[service setUserCredentialsWithUsername:username
 								   password:password];
-	GDataServiceTicket *ticket;
+	//GDataServiceTicket *ticket;
 	NSURL *feedURL = [GDataServiceGoogleContact groupFeedURLForUserID:kGDataServiceDefaultUser];
 	GDataQueryContact *query = [GDataQueryContact contactQueryWithFeedURL:feedURL];
 	[query setShouldShowDeleted:NO];
-	[query setMaxResults:2000];
+	[query setMaxResults:10000];
 	
-	ticket = [service fetchFeedWithQuery:query
+	/*
+	 ticket = [service fetchFeedWithQuery:query
 								delegate:self
 					   didFinishSelector:@selector(groupsFetchTicket:finishedWithFeed:error:)];
+	 */
+	[service fetchFeedWithQuery:query
+					   delegate:self
+			  didFinishSelector:@selector(groupsFetchTicket:finishedWithFeed:error:)];
 }
 
 - (void)getContacts {
@@ -238,7 +244,7 @@
 	NSURL *feedURL = [GDataServiceGoogleContact contactFeedURLForUserID:kGDataServiceDefaultUser];
 	GDataQueryContact *query = [GDataQueryContact contactQueryWithFeedURL:feedURL];
 	[query setShouldShowDeleted:NO];
-	[query setMaxResults:2000];
+	[query setMaxResults:10000];
 	
 	GDataFeedContactGroup *groupFeed = mGroupFeed;
     GDataEntryContactGroup *myContactsGroup
@@ -279,13 +285,13 @@
 	}
 	else {
 		NSMutableArray *array = [[NSMutableArray alloc] init];
-		NSLog(@"%@",[arr objectAtIndex:30]);
 		for (int i =0; i < [arr count]; i++) 
 		{
 			NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
 			//email
 			if ([(GDataEmail*)[[(GDataEntryContact*)[arr objectAtIndex:i] emailAddresses] objectAtIndex:0] address] != nil) {
 				[dic setObject:[(GDataEmail*)[[(GDataEntryContact*)[arr objectAtIndex:i] emailAddresses] objectAtIndex:0] address] forKey:@"email"];
+                NSLog(@"email: %@", [dic objectForKey:@"email"]);
 			}
 			else {
 				//[dic setObject:@"" forKey:@"email"];
@@ -296,6 +302,7 @@
 			//fullname
 			if ([(GDataName*)[(GDataEntryContact*)[arr objectAtIndex:i] name] fullName] != nil) {
 				[dic setObject:[[(GDataName*)[(GDataEntryContact*)[arr objectAtIndex:i] name] fullName] stringValue] forKey:@"name"];
+                NSLog(@"name: %@", [dic objectForKey:@"name"]);                
 			}
 			else {
 				[dic setObject:@"" forKey:@"name"];
@@ -303,23 +310,26 @@
 			//phone
 			if ([[(GDataEntryContact*)[arr objectAtIndex:i] phoneNumbers] objectAtIndex:0] != nil) {
 				[dic setObject:[[[(GDataEntryContact*)[arr objectAtIndex:i] phoneNumbers] objectAtIndex:0] stringValue] forKey:@"phone"];
+                NSLog(@"phone: %@", [dic objectForKey:@"phone"]);                                
 			}
 			else {
 				[dic setObject:@"" forKey:@"phone"];
 			}
-
-			//[dic setObject:[(GDataEmail*)[[(GDataEntryContact*)[arr objectAtIndex:i] phoneNumbers] objectAtIndex:0] address] forKey:@"name"];
 			[array addObject:dic];
 			
 			[dic release];
 		}
 		
 		ContactListViewController *gmailContactList = [[ContactListViewController alloc] init];
-		gmailContactList.contactList = [[NSMutableArray alloc] initWithArray:array];
+        NSMutableArray *contactArray = [[NSMutableArray alloc] initWithArray:array];
+		//gmailContactList.contactList = [[NSMutableArray alloc] initWithArray:array];
+        gmailContactList.contactList = contactArray;
 		gmailContactList.title = @"Gmail Contacts";
 		[self.navigationController pushViewController:gmailContactList animated:YES];
 		[array release];
+        [contactArray release];
 		[gmailContactList release];
 	}
 }
+
 @end

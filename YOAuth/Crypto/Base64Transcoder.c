@@ -145,7 +145,9 @@ bool Base64EncodeData(const void *inInputData, size_t inInputDataSize, char *out
 		if (theOutIndex % 74 == 72)
 		{
 			outOutputData[theOutIndex++] = '\r';
-			outOutputData[theOutIndex++] = '\n';
+			//outOutputData[theOutIndex++] = '\n';
+			outOutputData[theOutIndex] = '\n';
+
 		}
 	}
 	else if (theRemainingBytes == 2)
@@ -157,7 +159,9 @@ bool Base64EncodeData(const void *inInputData, size_t inInputDataSize, char *out
 		if (theOutIndex % 74 == 72)
 		{
 			outOutputData[theOutIndex++] = '\r';
-			outOutputData[theOutIndex++] = '\n';
+			//outOutputData[theOutIndex++] = '\n';
+			outOutputData[theOutIndex] = '\n';
+
 		}
 	}
 	return(true);

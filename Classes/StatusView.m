@@ -64,6 +64,8 @@
 }
 
 - (void)hideStatus {
+    if(!isShow) return;
+    
 	[activity1 stopAnimating];
 	[UIView beginAnimations:@"Show status" context:nil];
 	[UIView setAnimationDuration:0.8];

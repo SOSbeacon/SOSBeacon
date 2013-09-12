@@ -66,7 +66,7 @@ static NSString *const kOAuthOutOfBand = @"oob";
 	[client setOauthParamsLocation:@"OAUTH_PARAMS_IN_QUERY_STRING"];
 	
 	YOSResponseData *response = [client sendSynchronousRequest];
-	NSLog(@"%@",response.responseText);
+	//NSLog(@"%@",response.responseText);
 	
 	if(!response.didSucceed) {
 		return nil;

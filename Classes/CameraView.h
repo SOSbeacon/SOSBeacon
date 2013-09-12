@@ -26,10 +26,10 @@
 @property(nonatomic)	NSInteger count;
 @property(nonatomic)NSInteger countTime;
 @property(nonatomic)NSInteger capCount;
-@property (nonatomic,retain) CaptorView *captorView;
+@property (nonatomic,assign) CaptorView *captorView;
 @property(assign) BOOL autoMode;
 - (void)stopCapture;
 - (void)startCapture;
--(void)updateCountDown;
-- (void)capturePhoto;
+- (void)updateCountDown;
+- (void)captureImage;
 @end

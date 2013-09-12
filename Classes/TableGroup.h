@@ -12,7 +12,13 @@
 #import "TablePersonalDetail.h"
 #import "TableGroups.h"
 
-@interface TableGroup : UITableViewController <RestConnectionDelegate,UIAlertViewDelegate>{
+typedef enum {
+    AlertViewTagNone = 0,
+    AlertViewTagSave = 1,
+    AlertViewTagSearch = 2
+}AlertViewTag;
+
+@interface TableGroup : UITableViewController <RestConnectionDelegate,UIAlertViewDelegate> {
 	SOSBEACONAppDelegate *appDelegate;
 	TablePersonalDetail *personalDetail;
 	
@@ -32,8 +38,12 @@
 	BOOL isEdited;
 	id parentController;
 	NSInteger requestServer;
-	
+    BOOL hasJoinFeature;
+    BOOL isSearching;
+    NSString *keyWord;
+	UITextField *joinGroupNameTextField;    
 }
+
 @property (nonatomic, retain) TablePersonalDetail *personalDetail;
 @property (nonatomic, retain) RestConnection *rest;
 @property (nonatomic, retain) NSMutableArray *arrayContacts;
@@ -43,13 +53,17 @@
 @property (nonatomic) BOOL isUpdate;
 @property (nonatomic) BOOL isEdited;
 @property (nonatomic, assign) id parentController;
+@property (nonatomic) BOOL hasJoinFeature;
+@property (nonatomic, retain) NSString *keyWord;
+@property (nonatomic, retain) NSArray *arrayContactsOrigin;
  
 -(void)displayButtonAdd;
 -(void)addClick;
 -(IBAction)cancel:(id)sender;
 - (void)saveContactToServer;
-
 - (void)updateFirstContact;
 - (void)checkEditContact;
+- (void)joinButtonPressed;
+- (NSString *)groupNameForPersonal:(Personal *)person;
 
 @end

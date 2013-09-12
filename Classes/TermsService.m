@@ -7,7 +7,6 @@
 //
 
 #import "TermsService.h"
-#import "Register.h"
 #import "TermViewControl.h"
 #import"SplashView.h"
 @implementation TermsService
@@ -40,27 +39,24 @@
 */
 
 - (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
     
-    // Release any cached data, images, etc that aren't in use.
 }
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (void)dealloc {
+	if (splashview) 
+	[splashview release];
     [super dealloc];
 }
 
 - (IBAction)signUp {
-	NSLog(@"singup termservice");	
 	
-	SplashView *splashview =[[SplashView alloc] init];
-	[appdelegate.window  addSubview:splashview.view];
+	//splashview =[[SplashView alloc] init];
+	//[appdelegate.window  addSubview:splashview.view];
 	[self.view removeFromSuperview];
 }
 
@@ -68,11 +64,11 @@
 	[self.view removeFromSuperview];
 	TermViewControl *term = [[TermViewControl alloc] init];
 	[self presentModalViewController:term animated:YES];
+	[term release];
 }
 
 - (IBAction)Exit{
 	exit(0);
 }
-
 
 @end

@@ -7,14 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import"SOSBEACONAppDelegate.h";
-
+#import"SOSBEACONAppDelegate.h"//;
+#import "EmailView.h"
 @interface SettingsMain : UIViewController<UITableViewDelegate,UITableViewDataSource> {
 
 	NSArray *aryDataSource;
 	NSInteger flag;
 	SOSBEACONAppDelegate *appDelegate;
-
+	EmailView *emailer;
+    UITableView *mainTable;
 	
 }
 @property(nonatomic)NSInteger flag;

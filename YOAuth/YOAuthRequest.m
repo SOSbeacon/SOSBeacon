@@ -151,7 +151,7 @@
 		}else if([aMethod isEqualToString:@"PLAINTEXT"]){
 			signatureMethod = [[YOAuthSignatureMethod_PLAINTEXT alloc] init];
 		}else{
-			NSLog(@"Signature Method: \"%@\" not supported.", aMethod);
+		//	NSLog(@"Signature Method: \"%@\" not supported.", aMethod);
 		}
 	}
 	return self;

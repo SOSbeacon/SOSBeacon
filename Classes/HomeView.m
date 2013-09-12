@@ -3,6 +3,7 @@
 //  SOSBEACON
 //
 //  Created by cncsoft on 7/30/10.
+
 //  Copyright 2010 CNC. All rights reserved.
 //
 
@@ -12,7 +13,6 @@
 #import "RestConnection.h"
 #import "ValidateData.h"
 #import "CaptorView.h"
-#import "SOWebView.h" 
 #import "SlideToCancelViewController.h"
 #import "CheckingIn.h"
 #import "Uploader.h"
@@ -30,15 +30,15 @@
 	NSString *pass = [appDelegate.informationArray objectForKey:@"password"];
 	NSString *emergency = [appDelegate.settingArray objectForKey:ST_EmergencySetting];
 	//[pass length]
-	NSLog(@" pass length ========= : %d",[pass length]);
-	NSLog(@" %@ ,%@",pass,emergency);
+//	NSLog(@" pass length ========= : %d",[pass length]);
+//	NSLog(@" %@ ,%@",pass,emergency);
 	
 	if ([[NSFileManager defaultManager]  fileExistsAtPath:[NSString stringWithFormat:@"%@/allAccount.plist",DOCUMENTS_FOLDER] ]) 
 	{
 		
 		NSMutableDictionary *accArray =[[NSMutableDictionary alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@/allAccount.plist",DOCUMENTS_FOLDER]];
 		NSString *strPhoneNumber = appDelegate.phone;
-		NSLog(@" home view-------------> %@",strPhoneNumber);
+	//	NSLog(@" home view-------------> %@",strPhoneNumber);
 		NSMutableArray *acc = [accArray  objectForKey:strPhoneNumber];
 		if (acc == nil) 
 		{
@@ -48,10 +48,11 @@
 		else 
 		{
 			NSInteger active = [[acc objectAtIndex:1] intValue];
-			NSLog(@" active : %d",active);
+			//NSLog(@" active : %d",active);
 			if (active == 0 && ([pass length] == 0 ) && [emergency isEqualToString:@"0"]&&( appDelegate.contactCount == 0)&&appDelegate.canShowVideo)
 			{
-				NSLog(@" home view-------------> ");
+			//	NSLog(@" home view-------------> ");
+				appDelegate.canShowVideo = NO;
 				[acc replaceObjectAtIndex:1 withObject:@"1"];
 				[accArray  setObject:acc forKey:strPhoneNumber];
 				[accArray writeToFile:[NSString stringWithFormat:@"%@/allAccount.plist",DOCUMENTS_FOLDER] atomically:YES];
@@ -71,7 +72,7 @@
 			{
 				appDelegate.flagSetting = 3; 
 				appDelegate.tabBarController.selectedIndex = 3;
-				NSLog(@"sao the nhi lai loi roi a");
+			//	NSLog(@"sao the nhi lai loi roi a");
 			}
 			else 
 			{
@@ -94,6 +95,7 @@
 		{
 			VideoViewController *video = [[VideoViewController alloc] init];
 			[self presentModalViewController:video animated:YES];
+            [video release];
 			flag = 2;
 		}else 
 		if(buttonIndex ==1)	
@@ -209,8 +211,8 @@
 }
 
 - (void)dealloc {	
-	[self.vwImOkPopUp release];
-	[self.vwINeedHelpPopUp release];
+	[vwImOkPopUp release];
+	[vwINeedHelpPopUp release];
 	
 	 [slideToCancel2 release];
 	 [slideToCancel3 release];
@@ -228,7 +230,7 @@
 
 - (void) cancelled:(SlideToCancelViewController*)sender {
 	if(sender==slideToCancel){
-		NSLog(@"%^$%^ emergency Phone is :%@",[appDelegate.settingArray objectForKey:@"emergencySetting"]);
+		//NSLog(@"%^$%^ emergency Phone is :%@",[appDelegate.settingArray objectForKey:@"emergencySetting"]);
 		if ([[appDelegate.settingArray objectForKey:@"emergencySetting"] isEqualToString:@"0"]) {
 			//UIAlertView *alertPhone = [[UIAlertView alloc] initWithTitle:@"Message" message:@"Emergency phone number not yet set for your location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 			//[alertPhone show];
@@ -290,7 +292,7 @@
 		[alertPhone release];
 	}
 	else {
-		NSLog(@"call");
+		//NSLog(@"call");
 		actAlert.hidden=NO;
 		[actAlert startAnimating];
 		lblSendAlert.text = @"Sending alert to server...";
@@ -330,13 +332,13 @@
 #pragma mark -
 - (void)uploadFinish
 {
-	NSLog(@"up load finish");
-	NSLog(@"up load finish ----------************........");
+	//NSLog(@"up load finish");
+	//NSLog(@"up load finish ----------************........");
 }
 
 - (void)requestUploadIdFinish:(NSInteger)uploadId 
 {
-	NSLog(@"newflag1: %d",newflag1);
+	//NSLog(@"newflag1: %d",newflag1);
 	if (newflag1 == 1) 
 	{
 		//newflag1 =2;
@@ -347,7 +349,6 @@
 	else
 	if (uploadId > 0 && !isSendOK) 
 	{
-		NSLog(@"65456564564561563131654654654654654+6+64+966565+566545");
 		[senAlertaction stopAnimating];
 		senAlertaction.hidden = YES;
 		startingAlert.hidden = YES;
@@ -359,7 +360,7 @@
 		captor.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
 		[self presentModalViewController:captor animated:YES];	
 		appDelegate.flagsentalert = 1;
-	//	[captor autorelease];
+		[captor release];
 		isSendOK=NO;
 
 	}
@@ -419,13 +420,16 @@
 	[theView performSelector:@selector(removeFromSuperview) withObject:nil afterDelay:0.5];
 	
 }
--(void)showUIView:(UIView*)theView{
+-(void)showUIView:(UIView*)theView {
 	
 	theView.frame=CGRectMake(0, 480, theView.frame.size.width, theView.frame.size.height);
 	[self.tabBarController.view addSubview:theView];
 	[UIView beginAnimations:nil context:NULL];
 	theView.frame=CGRectMake(0, 480-theView.frame.size.height, theView.frame.size.width, theView.frame.size.height);
 	[UIView commitAnimations];
+    
+    //check internet connection
+    [[[UIApplication sharedApplication] delegate] performSelector:@selector(doCheckInternetViaRest)];
 }
 #pragma mark ActionMenus
 -(IBAction)showImOKMenu:(id)sender{
@@ -529,7 +533,7 @@
 	slideToCancel.view.alpha = 1.0;
 	slideToCancel2.enabled=YES;	
 	slideToCancel3.enabled=YES;
-	NSLog(@" array data: %@",arrayData);
+	//NSLog(@" array data: %@",arrayData);
 	if (loadIndex == 0) {
 		if ([[[arrayData objectForKey:@"response"] objectForKey:@"success"] isEqualToString:@"true"])
 		{	
@@ -566,10 +570,18 @@
 //Function callemergency
 - (void)callPanic {
 	NSString *panic = [appDelegate.settingArray objectForKey:ST_EmergencySetting];
-	NSLog(@" emergecy number : %@",panic);
+//	NSLog(@" emergecy number : %@",panic);
 	NSURL *phoneNumberURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@",panic]];
 	[[UIApplication sharedApplication] openURL:phoneNumberURL];	
 	//NSLog(@"ok");
+}
+
+
+-(void)hideAllUIView {
+    if(currentAction==ActionType_OK) [self dismissUIView:self.vwImOkPopUp];
+    else if(currentAction==ActionType_Help) [self dismissUIView:self.vwINeedHelpPopUp];
+    
+    currentAction = ActionType_None;
 }
 
 @end

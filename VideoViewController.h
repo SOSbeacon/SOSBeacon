@@ -3,7 +3,7 @@
 //  SOSBEACON
 //
 //  Created by bon on 8/16/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 CNC Software. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
