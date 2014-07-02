@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+  
+<RelativeLayout  
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:background="@drawable/main"
+  android:gravity="top"
+  >
+    <LinearLayout
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="left" 
+      android:gravity="right" 
+      android:orientation="vertical"
+    >
+        <TextView
+          android:layout_width="190dip"
+          android:layout_height="50dip"
+          android:layout_marginTop="60dip"
+          android:layout_marginRight="10dip"         
+          android:gravity="right" 
+          android:textSize="12dip"
+          android:text="@string/title_copyright">
+        </TextView>
+        
+        
+    </LinearLayout>
+  <TableLayout
+    android:layout_height="fill_parent" 
+    android:layout_width="fill_parent"
+    android:gravity="center"
+    android:layout_marginTop="125dip"
+    
+   >
+    	 <TableRow> 
+         <TextView 
+            android:text="@string/lblUserName"
+            android:width ="100dip"            
+            />
+         <EditText 
+            android:id="@+id/txtUserName"
+            android:singleLine="true" 
+            android:layout_width="200dip"
+            android:layout_height="40dip" />
+         </TableRow> 
+         
+         <TableRow>
+          <TextView 
+            android:text="@string/lblEmail"
+            />
+          <EditText 
+            android:id="@+id/txtEmail"            
+            android:layout_width="200dip"
+            android:layout_height="40dip"
+            android:singleLine="true"
+            android:inputType="textEmailAddress"
+            />
+          </TableRow>
+          
+          
+        <TableRow>
+          <TextView 
+            android:text="@string/lblPassword"
+            />
+          <EditText 
+            android:id="@+id/txtPassword" 
+            android:layout_width="200dip"
+            android:singleLine="true"
+            android:layout_height="40dip"
+            android:password="true" 
+            />
+          </TableRow>
+         <TableRow>
+          <TextView 
+            android:text="@string/lblPhonenumber"
+            />
+          <EditText 
+            android:id="@+id/txtPhonenumber" 
+            android:layout_width="200dip"
+            android:layout_height="40dip"
+            android:singleLine="true"
+            android:phoneNumber="true"
+            android:inputType="phone"
+            />
+          </TableRow>
+          
+          
+          <TableRow>
+          <TextView 
+            android:text=""
+            />
+            
+		  <TableLayout>
+		     <TableRow>
+	            <Button 
+	            android:id="@+id/btnlogIn" 
+	            android:layout_width="100dip"
+	            android:text="Submit" />
+	            <Button 
+	            android:id="@+id/btnCancel" 
+	            android:layout_width="100dip"
+	            android:text="Cancel" />
+              </TableRow>
+              
+
+          </TableLayout>
+          </TableRow>
+    	
+    
+    </TableLayout>
+</RelativeLayout>
+
+</ScrollView>

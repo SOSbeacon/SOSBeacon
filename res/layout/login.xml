@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent" android:fillViewport="true">
+	<FrameLayout android:layout_width="fill_parent" android:background="@drawable/main" 
+		android:layout_height="fill_parent" android:orientation="vertical">
+		<LinearLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:layout_gravity="left"
+			android:gravity="right" android:orientation="vertical">
+			<TextView android:layout_width="190dip"
+				android:layout_height="wrap_content" android:layout_marginTop="80dip"
+				android:layout_marginRight="10dip" android:gravity="right"
+				android:textSize="12dip" android:text="@string/title_copyright">
+			</TextView>
+		</LinearLayout>
+
+		<LinearLayout android:layout_width="250dip"
+			android:layout_height="fill_parent" android:orientation="vertical"
+			android:layout_gravity="center"
+			android:gravity="center"
+			android:layout_marginTop="50dip"
+			android:id="@+id/loginForm"  
+			>
+			<!-- RadioGroup 
+				android:layout_width="fill_parent" android:layout_height="wrap_content" 
+				android:orientation="horizontal" android:gravity="center"
+	            android:layout_marginTop="10dip"
+	            android:layout_marginBottom="5dip"
+            >
+                <RadioButton android:text="@string/login" android:id="@+id/rbLogin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="22dip" android:textStyle="bold" android:layout_marginRight="10dip"></RadioButton>
+                <RadioButton android:text="@string/register" android:id="@+id/rbRegister" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="22dip" android:textStyle="bold"></RadioButton>
+			</RadioGroup -->
+			<EditText android:id="@+id/etNumber"
+				android:layout_width="fill_parent" android:layout_height="60dip"
+				android:singleLine="true" android:hint="@string/phoneNumber"
+				android:inputType="phone" />
+			<!--  EditText android:id="@+id/etPassword" android:hint="@string/enterPassword"
+				android:layout_width="fill_parent" android:singleLine="true"
+				android:layout_height="60dip" android:password="true"
+				android:layout_marginTop="1dip"/ -->
+
+			<RelativeLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:orientation="horizontal" android:paddingTop="10dip">
+				<Button android:id="@+id/btnLogIn"
+					android:text="@string/btnSubmit" android:layout_alignParentLeft="true"
+					style="@style/btGreen" android:layout_height="70dip" android:layout_width="120dip"
+					 android:textSize="18dip" android:textStyle="normal" />
+				<Button android:id="@+id/btnCancel" android:text="@string/btnCancel"
+					style="@style/btBlack" android:layout_alignParentRight="true"
+					android:layout_height="70dip" android:layout_width="120dip"
+					android:textSize="18dip" android:textStyle="normal" />
+			</RelativeLayout>
+		</LinearLayout>
+	</FrameLayout>
+</ScrollView>
