@@ -39,7 +39,7 @@ class DataController extends BaseController {
                     ->addValidator('Size', false, array('max' => '5120kB'))
                     ->setDestination(APPLICATION_PATH . '/../tmp');
             $files = $upload->getFileInfo();
-            
+
             $debug .= '== File info: ' . print_r($files, 1);
             if (!$upload->isValid()) {
                 throw new Zend_Exception('Bad data: ' . implode(',', $upload->getMessages()));
@@ -88,10 +88,10 @@ class DataController extends BaseController {
                         // convert to mp3
                         $output = array();
                         // http://packages.medibuntu.org/maverick/libavcodec-extra-52.html
-                        exec("/usr/local/sbin/ffmpeg -i $fullPath -ar 8000 -ab 24000 $mp3File", $output, $returnVal3);
+                        exec("/usr/bin/ffmpeg -i $fullPath -ar 8000 -ab 24000 $mp3File", $output, $returnVal3);
                         if (!file_exists($mp3File)) {
                             //   if (file_exists($fullPath)) unlink($fullPath);
-                            
+
                             throw new Zend_Exception('Error while converting audio file');
                         }
                         if (file_exists($fullPath)) unlink($fullPath);
@@ -152,7 +152,7 @@ class DataController extends BaseController {
                 //            $resObj['filesize'] = $fileSize;
                 $resObj['type'] = $type;
                 $this->logger->log('Alert data sent successfully', Zend_Log::INFO);
-                break; // 1 file / time only                                
+                break; // 1 file / time only
             }
         } catch (Zend_Exception $ex) {
             $resObj['success'] = "false";
@@ -163,7 +163,7 @@ class DataController extends BaseController {
         $debug .= "== End recive file, time: " . date('Y-m-d H:i:s');
         $resObj['debug'] = $debug;
         $this->view->response = $resObj;
-        
+
     }
 
     public function putAction() {
@@ -175,7 +175,7 @@ class DataController extends BaseController {
         $$this->getResponse()->setHttpResponseCode(405);
         $this->view->message = 'Not implemented';
     }
-    
+
     public function indexAction() {
         $this->getResponse()->setHttpResponseCode(405);
         $this->view->message = 'Not implemented';
